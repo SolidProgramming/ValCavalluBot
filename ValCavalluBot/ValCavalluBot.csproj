@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\SVG\**" />
+    <Content Remove="wwwroot\SVG\**" />
+    <EmbeddedResource Remove="wwwroot\SVG\**" />
+    <None Remove="wwwroot\SVG\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HowrseBotClient\HowrseBotClient.csproj" />
     <ProjectReference Include="..\Shares\Shares.csproj" />
   </ItemGroup>
