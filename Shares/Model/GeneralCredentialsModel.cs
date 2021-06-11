@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Shares.Model
 {
-    public class CredentialsModel
+    public class GeneralCredentialsModel
     {
-        public string HowrseUsername { get; set; }
-        public string HowrsePassword { get; set; }
-        public string Username { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 }

@@ -1,3 +1,109 @@
-﻿@page "/"
+﻿@inject NavigationManager NavigationManager;
+@page "/";
+@page "/dashboard";
+@using Shares
+@using Shares.Model;
+@using Services;
+@inject IBotManagerService BotManagerService;
 
+<link rel="stylesheet" href="/css/Index.css" />
 <h1>Dashboard</h1>
+<button id="addBotBtn" class="btn btn-primary" @onclick="MoveToBotCreation">
+    <svg id="addBotIco" />Bot
+</button>
+<hr />
+<div class="row mt-3 mb-3">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Howrse Account</th>
+                <th>Bot Id</th>
+                <th>Status</th>
+                <th>Löschen</th>
+            </tr>
+        </thead>
+        @foreach (HowrseBotModel bot in Bots)
+        {
+            <tr>
+                <td>@bot.Settings.Credentials.HowrseUsername</td>
+                <td>@bot.Id</td>
+                <td>
+                    @switch (bot.Status)
+                    {
+                        case Shares.Enum.BotClientStatusModel.Stopped:
+                            <button class="btn btn-success" type="button" @onclick="@(e => StartBot(bot.Id))">
+                                <span role="status" aria-hidden="true">
+                                    Start
+                                </span>
+                            </button>
+                            break;
+                        case Shares.Enum.BotClientStatusModel.Started:
+                            <button class="btn btn-secondary" type="button" @onclick="@(e => StopBot(bot.Id))">
+                                <span role="status" aria-hidden="true">
+                                    Stoppen
+                                </span>
+                            </button>
+                            break;
+                        case Shares.Enum.BotClientStatusModel.AwaitingDisconnect:
+                            <button class="btn btn-primary" type="button">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                                </span>
+                                Erwarte Stopp
+                            </button>
+                            break;
+                        case Shares.Enum.BotClientStatusModel.AwaitingConnection:
+                            <button class="btn btn-primary" type="button">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                                </span>
+                                Erwarte Start
+                            </button>
+                            break;
+                        default:
+                            break;
+                    }
+                </td>
+                <td>
+                    <input type="button" class="btn btn-danger" @onclick="@(e => Delete(bot.Id))" value="Löschen" />
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+@code{
+
+    private List<HowrseBotModel> Bots { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Bots = BotManagerService.GetBots();
+
+        if (Bots is null)
+        {
+            Bots = new();
+        }
+    }
+
+    private void MoveToBotCreation()
+    {
+        NavigationManager.NavigateTo("/newbot");
+    }
+
+    //TODO: delete bot
+    private void Delete(string botId)
+    {
+        Console.WriteLine(botId);
+    }
+
+    //TODO: start bot
+    private void StartBot(string botId)
+    {
+        BotManagerService.StartBot(botId);
+    }
+
+    //TODO: stop bot
+    private void StopBot(string botId)
+    {
+
+    }
+
+}

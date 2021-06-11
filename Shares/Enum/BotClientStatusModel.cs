@@ -10,7 +10,7 @@ namespace Shares.Enum
     {
         Stopped,
         Started,
-        AwaitingDisconnect,
-        AwaitingConnection
+        LoggedIn,
+        Error
     }
 }

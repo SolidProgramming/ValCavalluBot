@@ -1,0 +1,52 @@
+﻿@page "/newbot";
+@using Shares.Model;
+@using Services;
+@inject NavigationManager NavigationManager;
+@inject ISettingsService SettingsService;
+@inject IBotManagerService BotManagerService;
+
+<h3>Bot erstellen</h3>
+
+<div class="row mt-3 mb-3">
+    <div class="col-md-4">
+        <label class="font-weight-bold">Howrse Benutzername</label>
+        <input class="form-control" @bind="BotSettings.Credentials.HowrseUsername" />
+    </div>
+    <div class="col-md-4">
+        <label class="font-weight-bold">Howrse Password</label>
+        <input type="password" class="form-control" @bind="BotSettings.Credentials.HowrsePassword" />
+    </div>
+    <div class="col-md-4">
+        <label class="font-weight-bold">Howrse Server</label>
+        <input class="form-control" @bind="BotSettings.Server" />
+    </div>
+</div>
+<div class="row mt-3 mb-3">
+    <div class="col">
+        <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-danger form-control" @onclick="Cancel">Abbrechen</button>
+    </div>
+</div>
+
+
+@code {
+
+    private BotSettingsModel BotSettings { get; set; } = new();
+
+    private void Save()
+    {        
+        BotManagerService.CreateBot(BotSettings);
+        List<HowrseBotModel> bots = BotManagerService.GetBots();
+
+        SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
+
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/dashboard");
+    }
+}

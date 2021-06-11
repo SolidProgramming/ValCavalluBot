@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31402.337
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValCavalluBot", "ValCavalluBot\ValCavalluBot.csproj", "{0CA91412-2CD6-42FC-97A9-B6F076AB98D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ValCavalluBot", "ValCavalluBot\ValCavalluBot.csproj", "{0CA91412-2CD6-42FC-97A9-B6F076AB98D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shares", "Shares\Shares.csproj", "{0AF47F94-FA25-4462-A155-2C6906B407C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shares", "Shares\Shares.csproj", "{0AF47F94-FA25-4462-A155-2C6906B407C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HowrseBotClient", "HowrseBotClient\HowrseBotClient.csproj", "{7EB41590-DD9C-43F1-BC91-50C838D2FEC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HowrseBotClient", "HowrseBotClient\HowrseBotClient.csproj", "{7EB41590-DD9C-43F1-BC91-50C838D2FEC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,48 @@
+﻿@page "/account";
+@using Shares.Model;
+@using Services;
+@inject ISettingsService SettingsService;
+@inject NavigationManager NavigationManager;
+
+<h3>Account</h3>
+
+<div class="row mt-3 mb-3">
+    <div class="col">
+        <label class="font-weight-bold">SolidProgramming Email</label>
+        <input class="form-control" @bind="GeneralSettings.GeneralCredentials.Email" />
+    </div>
+    <div class="col">
+        <label class="font-weight-bold">SolidProgramming Password</label>
+        <input type="password" class="form-control" @bind="GeneralSettings.GeneralCredentials.Password" />
+    </div>
+</div>
+<div class="row mt-3 mb-3">
+    <div class="col">
+        <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-danger form-control" @onclick="Cancel">Abbrechen</button>
+    </div>
+</div>
+
+@code {
+    private GeneralSettingsModel GeneralSettings { get; set; } = new();
+
+    //TODO: async
+    protected override void OnInitialized()
+    {
+        GeneralSettings = SettingsService.LoadGeneralSettings();
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void Save()
+    {
+        SettingsService.SaveGeneralSettings(GeneralSettings);
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+}
