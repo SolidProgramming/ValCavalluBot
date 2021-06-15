@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Shares.Enum
 {
-    public enum BotClientStatusModel
+    public enum BotClientStatus
     {
         Stopped,
-        Started,
-        LoggedIn,
+        Working,
+        Idle,
         Error
     }
 }

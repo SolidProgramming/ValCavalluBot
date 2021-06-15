@@ -30,9 +30,9 @@ namespace ValCavalluBot.Services
             return BotManager.GetBots();
         }
 
-        public void StartBot(string botId)
+        public async Task StartBot(string botId)
         {
-            BotManager.StartBot(botId);
+            await BotManager.StartBot(botId).ConfigureAwait(true);
         }
     }
 }

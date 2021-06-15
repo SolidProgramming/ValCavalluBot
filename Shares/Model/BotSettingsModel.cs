@@ -12,5 +12,6 @@ namespace Shares.Model
         public HowrseCredentialsModel Credentials = new();
         public string Server { get; set; }
         public HowrseAccountType HowrseAccountType { get; set; }
+         
     }
 }

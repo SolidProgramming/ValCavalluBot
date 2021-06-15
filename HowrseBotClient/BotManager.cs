@@ -5,12 +5,12 @@ using Shares;
 using Shares.Model;
 using Shares.Enum;
 using System.Web;
+using System.Threading.Tasks;
 
 namespace HowrseBotClient
 {
     public static class BotManager
     {
-        //TODO: event on logged in
         private static List<HowrseBotModel> Bots = new List<HowrseBotModel>();
 
         public static void CreateBot(BotSettingsModel botSettings)
@@ -30,7 +30,7 @@ namespace HowrseBotClient
             Bots.RemoveAll(_ => _.Id == botId);
             SettingsHandler.SaveSettings(Bots, FileType.BotSettings);
         }
-        public static void StartBot(string botId)
+        public static async Task StartBot(string botId)
         {
             HowrseBotModel bot = Bots.Single(_ => _.Id == botId);
 
@@ -38,24 +38,20 @@ namespace HowrseBotClient
             bot.OnLoginSuccessful += Bot_OnLoginSuccessful;
             bot.OnBotStatusChanged += Bot_OnBotStatusChanged;
 
-            bot.Login();
+            await bot.Login();
         }
-
-        private static void Bot_OnBotStatusChanged(BotClientStatusModel obj)
+        private static void Bot_OnBotStatusChanged(BotClientStatus obj)
         {
             //TODO: tbc
         }
-
         private static void Bot_OnLoginSuccessful()
         {
             Console.WriteLine("Logged in!");
         }
-
         private static void Bot_OnLoginFailed(HowrseServerLoginResponseModel obj)
         {
-            Console.WriteLine("Login failed: " + obj.errorsText);   
+            Console.WriteLine("Login failed: " + obj.errorsText);
         }
-
         public static List<HowrseBotModel> GetBots()
         {
             if (Bots.Count == 0)

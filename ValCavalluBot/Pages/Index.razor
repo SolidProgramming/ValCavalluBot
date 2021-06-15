@@ -4,6 +4,7 @@
 @using Shares
 @using Shares.Model;
 @using Services;
+@using Shares.Enum;
 @inject IBotManagerService BotManagerService;
 
 <link rel="stylesheet" href="/css/Index.css" />
@@ -25,37 +26,28 @@
         @foreach (HowrseBotModel bot in Bots)
         {
             <tr>
-                <td>@bot.Settings.Credentials.HowrseUsername</td>
+                <td><a href="@string.Format("/bots/{0}", bot.Id)">@bot.Settings.Credentials.HowrseUsername</a></td>
                 <td>@bot.Id</td>
                 <td>
                     @switch (bot.Status)
                     {
-                        case Shares.Enum.BotClientStatusModel.Stopped:
+                        case Shares.Enum.BotClientStatus.Stopped:
                             <button class="btn btn-success" type="button" @onclick="@(e => StartBot(bot.Id))">
                                 <span role="status" aria-hidden="true">
                                     Start
                                 </span>
                             </button>
                             break;
-                        case Shares.Enum.BotClientStatusModel.Started:
-                            <button class="btn btn-secondary" type="button" @onclick="@(e => StopBot(bot.Id))">
-                                <span role="status" aria-hidden="true">
-                                    Stoppen
-                                </span>
+                        case Shares.Enum.BotClientStatus.Idle:
+                            <button class="btn btn-secondary" type="button" @onclick="@(e => StopBot(bot.Id))">                                
+                                Stoppen
                             </button>
                             break;
-                        case Shares.Enum.BotClientStatusModel.AwaitingDisconnect:
+                        case Shares.Enum.BotClientStatus.Working:
                             <button class="btn btn-primary" type="button">
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
                                 </span>
-                                Erwarte Stopp
-                            </button>
-                            break;
-                        case Shares.Enum.BotClientStatusModel.AwaitingConnection:
-                            <button class="btn btn-primary" type="button">
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
-                                </span>
-                                Erwarte Start
+                                Abbrechen
                             </button>
                             break;
                         default:
@@ -97,6 +89,10 @@
     //TODO: start bot
     private void StartBot(string botId)
     {
+        HowrseBotModel bot = Bots.Single(_ => _.Id == botId);
+
+        bot.OnBotStatusChanged += OnBotStatusChangedEvent;
+
         BotManagerService.StartBot(botId);
     }
 
@@ -104,6 +100,11 @@
     private void StopBot(string botId)
     {
 
+    }
+
+    private void OnBotStatusChangedEvent(BotClientStatus status)
+    {
+        InvokeAsync(() => StateHasChanged()).ConfigureAwait(true);
     }
 
 }

@@ -8,7 +8,7 @@ namespace ValCavalluBot.Services
 {
     interface IBotManagerService
     {
-        void StartBot(string botId);
+        Task StartBot(string botId);
         void CreateBot(BotSettingsModel botSettings);
         List<HowrseBotModel> GetBots();
         HowrseBotModel GetBot(string botId);
