@@ -71,5 +71,11 @@ namespace HowrseBotClient
         {
             return Bots.Single(_ => _.Id == botId);
         }
+        public static void AddTaskToQue(string botId, HowrseTaskModel howrseTask)
+        {
+            HowrseBotModel bot = Bots.Single(_ => _.Id == botId);
+
+            bot.AddToQue(howrseTask);
+        }
     }
 }

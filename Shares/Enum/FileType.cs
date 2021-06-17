@@ -9,6 +9,7 @@ namespace Shares.Enum
     public enum FileType
     {
         GeneralSettings,
-        BotSettings
+        BotSettings,
+        BotExitConditionSettings
     }
 }

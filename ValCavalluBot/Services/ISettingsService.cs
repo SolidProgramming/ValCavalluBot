@@ -14,6 +14,8 @@ namespace ValCavalluBot.Services
         List<HowrseBotModel> LoadHowrseBotsSettings();
         GeneralSettingsModel LoadGeneralSettings();
         BotSettingsModel LoadBotSettings();
+        void SaveConditionSettings(ExitConditionSettingModel exitConditionSetting);
+        ExitConditionSettingModel LoadExitConditionSettings(string botId);
 
     }
 }

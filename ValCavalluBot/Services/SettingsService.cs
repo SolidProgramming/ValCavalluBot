@@ -29,10 +29,17 @@ namespace ValCavalluBot.Services
         {
             SettingsHandler.SaveSettings(botSettings, FileType.BotSettings);
         }
-
         public void SaveGeneralSettings(GeneralSettingsModel generalSettings)
         {
             SettingsHandler.SaveSettings(generalSettings, FileType.GeneralSettings);
+        }
+        public void SaveConditionSettings(ExitConditionSettingModel exitConditionSetting)
+        {
+            SettingsHandler.SaveSettings(exitConditionSetting, FileType.BotExitConditionSettings);
+        }
+        public ExitConditionSettingModel LoadExitConditionSettings(string botId)
+        {
+            return SettingsHandler.LoadSettings<ExitConditionSettingModel>(FileType.BotExitConditionSettings);
         }
     }
 }

@@ -21,6 +21,8 @@ namespace Shares.Model
         public string Id { get; set; }
         private string HowrseUserId { get; set; }
 
+        private QueModel Que = new();
+
         private BotClientStatus _Status;
         public BotClientStatus Status
         {
@@ -90,6 +92,24 @@ namespace Shares.Model
                     Status = BotClientStatus.Error;
                 }
             }).ConfigureAwait(true);
+        }
+
+        //TDOD: async
+        public void AddToQue(HowrseTaskModel howrseTask)
+        {
+            Que.AddTask(howrseTask);
+        }
+
+        //TDOD: async
+        public void WorkOnQue()
+        {
+            int queTaskCount = Que.Tasks.Count;
+            int queStepCount = Que.Horses.Count;
+
+            int runCount = 0;
+
+            //ExitConditionSettingModel botExitCondition = 
+
         }
     }
 }

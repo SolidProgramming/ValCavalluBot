@@ -16,11 +16,13 @@ namespace Shares
         private static readonly string SavePathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot");
         private static readonly string GeneralSettingsFilePath = Path.Combine(SavePathDirectory, "GeneralSettings");
         private static readonly string BotSettingsFilePath = Path.Combine(SavePathDirectory, "BotSettings");
+        private static readonly string BotExitConditionSettingsFilePath = Path.Combine(SavePathDirectory, "BotExitConditionSettings");
 
         private static Dictionary<FileType, string> FilesPath = new()
         {
             { FileType.GeneralSettings, GeneralSettingsFilePath },
-            { FileType.BotSettings, BotSettingsFilePath }            
+            { FileType.BotSettings, BotSettingsFilePath },
+            { FileType.BotExitConditionSettings, BotExitConditionSettingsFilePath }
         };
 
         public static T LoadSettings<T>(FileType fileType)
@@ -41,7 +43,7 @@ namespace Shares
                 return (T)Convert.ChangeType(serializer.Deserialize(rdr), typeof(T), System.Globalization.CultureInfo.InvariantCulture);
             }
             catch (Exception)
-            {                
+            {
                 return default;
             }
         }

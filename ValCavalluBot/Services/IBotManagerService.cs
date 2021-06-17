@@ -13,5 +13,6 @@ namespace ValCavalluBot.Services
         List<HowrseBotModel> GetBots();
         HowrseBotModel GetBot(string botId);
         void DeleteBot(string botId);
+        void AddTaskToQue(string botId, HowrseTaskModel howrseTask);
     }
 }

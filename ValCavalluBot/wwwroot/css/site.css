@@ -54,3 +54,7 @@ a, .btn-link {
     background: rgb(41,119,127) !important;
     background: linear-gradient(135deg, rgba(41,119,127,1) 0%, rgba(213,63,140,1) 100%) !important;
 }
+
+.actionImage{
+    max-width: 100px;
+}

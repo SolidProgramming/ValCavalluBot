@@ -1,9 +1,11 @@
-﻿@using Data.Model; 
+﻿@using Data.Model;
 
-<div>
-    <img src="@HowrseActionCheckboxModel.ImageUrl" class="h-100" />
-    <input class="form-check-input" type="checkbox" checked="@HowrseActionCheckboxModel.Checked"/>
+<div class="col-sm-1">
+    <img src="@HowrseActionCheckboxModel.ImageUrl" class="actionImage"  />
+    <input class="form-check-input align-bottom" type="checkbox" checked="@HowrseActionCheckboxModel.Checked" />
 </div>
+
+
 
 
 @code {

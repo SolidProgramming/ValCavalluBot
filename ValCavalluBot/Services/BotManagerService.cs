@@ -34,5 +34,9 @@ namespace ValCavalluBot.Services
         {
             await BotManager.StartBot(botId).ConfigureAwait(true);
         }
+        public void AddTaskToQue(string botId, HowrseTaskModel howrseTask)
+        {
+            BotManager.AddTaskToQue(botId, howrseTask);
+        }
     }
 }
