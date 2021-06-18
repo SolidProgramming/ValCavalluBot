@@ -55,6 +55,12 @@ a, .btn-link {
     background: linear-gradient(135deg, rgba(41,119,127,1) 0%, rgba(213,63,140,1) 100%) !important;
 }
 
-.actionImage{
-    max-width: 100px;
+.actionImage {
+    max-width: 6rem;
+    min-width: 5rem;
+    position: relative;
+}
+
+#HowrseActionLabel {
+    vertical-align: bottom;
 }
