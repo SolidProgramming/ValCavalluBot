@@ -1,0 +1,87 @@
+﻿@using Shares
+@using Shares.Model;
+@using Services;
+@using Shares.Enum;
+@inject IBotManagerService BotManagerService;
+
+<tr>
+    <td><a href="@string.Format("/bots/{0}", Bot.Id)">@Bot.Settings.Credentials.HowrseUsername</a></td>
+    <td>@Bot.Id</td>
+    <td class="text-capitalize text-info">@Bot.CurrentAction.ToString()</td>
+    <td>
+        @switch (Bot.Status)
+        {
+            case Shares.Enum.BotClientStatus.Stopped:
+                <button class="btn btn-success" type="button" @onclick="@StartBot">
+                    <span role="status" aria-hidden="true">
+                        Start
+                    </span>
+                </button>
+                break;
+            case Shares.Enum.BotClientStatus.Started:
+                <button class="btn btn-primary" type="button" @onclick="@StopBot">
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
+                    </span>
+                    Stoppen
+                </button>
+                break;
+            default:
+                break;
+        }
+    </td>
+    <td>
+        <input type="button" class="btn btn-danger" @onclick="@Delete" value="Löschen" />
+    </td>
+    <td>
+        <button class="btn btn-default" @onclick="e => this.Collapsed = !this.Collapsed">
+            @if (Collapsed)
+            {
+                <img src="/ICON/TradeAndDashboard/SVG/Trade_Icons-25.svg" width="32" height="32" />
+            }
+            else
+            {
+                <img src="/ICON/TradeAndDashboard/SVG/Trade_Icons-26.svg" width="32" height="32" />
+            }
+        </button>
+    </td>
+</tr>
+<tr>
+    <HorseDetailsComponent Collapsed="@Collapsed"></HorseDetailsComponent>
+</tr>
+
+
+
+
+@code {
+    [Parameter]
+    public HowrseBotModel Bot { get; set; }
+
+    private bool Collapsed = false; //show on default
+
+    private void Delete()
+    {
+
+    }
+
+    private void StartBot()
+    {
+        Bot.OnBotStatusChanged += OnBotStatusChangedEvent;
+        Bot.OnBotCurrentActionChanged += OnBotCurrentStatusChangedEvent;
+
+        BotManagerService.StartBot(Bot.Id);
+    }
+
+    private void StopBot()
+    {
+        BotManagerService.StopBot(Bot.Id);
+    }
+
+    private void OnBotStatusChangedEvent(BotClientStatus status)
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
+    private void OnBotCurrentStatusChangedEvent(BotClientCurrentAction action)
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
+}

@@ -1,0 +1,58 @@
+﻿<td colspan="6">
+    <div class="@(Collapsed? "collapse": "" )">
+        <div class="row border">
+            <div class="col-md">
+                <label>Equus</label>
+                <img src="/ICON/Business/SVG/LOAN MONEY.svg" height="32" width="32" />
+                <!--<img alt="lodinggif"/>-->
+                <label>1.4343.123</label>
+            </div>
+            <div class="col-md">
+                <label>Pässe</label>
+                <img src="/ICON/Business/SVG/LOAN MONEY.svg" height="32" width="32" />
+                <!--<img alt="lodinggif"/>-->
+                <label>123</label>
+            </div>
+            <div class="col-md">
+                <label>Rang</label>
+                <img src="/ICON/Business/SVG/CAREER ADVANCEMENT.svg" height="32" width="32" />
+                <!--<img alt="lodinggif"/>-->
+                <label>100.432</label>
+            </div>
+            <div class="col-md">
+                <label>Pferde</label>
+                <img src="/ICON/Farm/SVG/5976 - Horse Shoe.svg" height="32" width="32" />
+                <!--<img alt="lodinggif"/>-->
+                <label>5.213</label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-sm-2">
+                <div class="m-1">
+                    <img src="/ICON/Energy/SVG/flash.svg" height="24" width="24" />
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                    </div>
+                </div>
+                <div class="m-1">
+                    <img src="/ICON/Energy/SVG/flash.svg" height="24" width="24" />
+                    <div class="progress">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                    </div>
+                </div>
+                <div class="m-1">
+                    <img src="/ICON/Energy/SVG/flash.svg" height="24" width="24" />
+                    <div class="progress">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</td>
+
+
+@code {
+    [Parameter]
+    public bool Collapsed { get; set; } = true;
+}

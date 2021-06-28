@@ -10,7 +10,7 @@ namespace Shares.Model
     public class BotSettingsModel
     {
         public HowrseCredentialsModel Credentials = new();
-        public List<HowrseTaskModel> Actions = new();
+        public HowrseTaskModel Actions = new();
         public string Server { get; set; }
         public HowrseAccountType HowrseAccountType { get; set; }
          

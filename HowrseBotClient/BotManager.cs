@@ -6,6 +6,8 @@ using Shares.Model;
 using Shares.Enum;
 using System.Web;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace HowrseBotClient
 {
@@ -32,25 +34,27 @@ namespace HowrseBotClient
         }
         public static async Task StartBot(string botId)
         {
-            HowrseBotModel bot = Bots.Single(_ => _.Id == botId);
+            HowrseBotModel bot = GetBot(botId);
 
-            bot.OnLoginFailed += Bot_OnLoginFailed;
-            bot.OnLoginSuccessful += Bot_OnLoginSuccessful;
             bot.OnBotStatusChanged += Bot_OnBotStatusChanged;
 
-            await bot.Login();
+            bot.Status = BotClientStatus.Started;
+            bot.CurrentAction = BotClientCurrentAction.Login;
+
+            await Login(bot);
         }
-        private static void Bot_OnBotStatusChanged(BotClientStatus obj)
+        public static async Task StopBot(string botId)
         {
-            //TODO: tbc
+            HowrseBotModel bot = GetBot(botId);
+
+            await Logout(bot);
+
+            bot.Status = BotClientStatus.Stopped;
+            bot.CurrentAction = BotClientCurrentAction.Keine;
         }
-        private static void Bot_OnLoginSuccessful()
+        private static void Bot_OnBotStatusChanged(BotClientStatus status)
         {
-            Console.WriteLine("Logged in!");
-        }
-        private static void Bot_OnLoginFailed(HowrseServerLoginResponseModel obj)
-        {
-            Console.WriteLine("Login failed: " + obj.errorsText);
+            
         }
         public static List<HowrseBotModel> GetBots()
         {
@@ -71,11 +75,72 @@ namespace HowrseBotClient
         {
             return Bots.Single(_ => _.Id == botId);
         }
-        public static void AddTaskToQue(string botId, HowrseTaskModel howrseTask)
+        public static async Task Login(HowrseBotModel bot)
         {
-            HowrseBotModel bot = Bots.Single(_ => _.Id == botId);
+            await Task.Run(() =>
+            {
+                string csrf = string.Empty;
+                string auth_token = string.Empty;
+                string html = string.Empty;
+                string sid = string.Empty;
 
-            bot.AddToQue(howrseTask);
+                html = Connection.Get("https://" + bot.Settings.Server + "/");
+
+                //tolower?
+                auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
+                csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
+                
+                string serverResponse = Connection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
+
+                HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
+
+                if (howrseServerLoginResponse.errors.Count > 0)
+                {
+                    bot.Status = BotClientStatus.Error;
+                    bot.CurrentAction = BotClientCurrentAction.Keine;
+                    return;
+                }
+
+                Connection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
+                html = Connection.Get("https://" + bot.Settings.Server + "/jeu/");
+
+                if (html.Contains("Equus"))
+                {
+                    bot.HowrseUserId = Regex.Match(html, "href=\"/joueur/fiche/\\?id=(\\d+)\"><span class").Groups[1].Value;
+                    bot.SID = Regex.Match(html, "sid=(.*?)'}\\)\\);").Groups[1].Value;
+
+                    if (html.Contains("/header/logo/vip/"))
+                    {
+                        bot.Settings.HowrseAccountType = HowrseAccountType.VIP;
+                    }
+                    else if (html.Contains("/header/logo/pegase"))
+                    {
+
+                        bot.Settings.HowrseAccountType = HowrseAccountType.Pegasus;
+                    }
+                    else
+                    {
+                        bot.Settings.HowrseAccountType = HowrseAccountType.Normal;
+                    }
+                }
+                else
+                {
+                    bot.Status = BotClientStatus.Error;
+                    bot.CurrentAction = BotClientCurrentAction.Keine;
+                }
+            });
+        }
+        public static async Task Logout(HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                bot.CurrentAction = BotClientCurrentAction.Logout;
+                Connection.Post("https://www.howrse.de/site/doLogOut", $"sid={bot.SID}");               
+            });
+        }
+        private static async Task PerformActions()
+        {
+
         }
     }
 }

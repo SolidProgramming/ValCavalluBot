@@ -14,29 +14,25 @@ namespace ValCavalluBot.Services
         {
             BotManager.CreateBot(botSettings);
         }
-
         public void DeleteBot(string botId)
         {
             BotManager.DeleteBot(botId);
         }
-
         public HowrseBotModel GetBot(string botId)
         {
             return BotManager.GetBot(botId);
         }
-
         public List<HowrseBotModel> GetBots()
         {
             return BotManager.GetBots();
         }
-
         public async Task StartBot(string botId)
         {
-            await BotManager.StartBot(botId).ConfigureAwait(true);
+            await BotManager.StartBot(botId);
         }
-        public void AddTaskToQue(string botId, HowrseTaskModel howrseTask)
+        public async Task StopBot(string botId)
         {
-            BotManager.AddTaskToQue(botId, howrseTask);
+            await BotManager.StopBot(botId);
         }
     }
 }

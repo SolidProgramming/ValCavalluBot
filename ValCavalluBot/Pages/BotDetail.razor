@@ -2,9 +2,6 @@
 @using Shares.Model;
 @using Shares.Enum;
 @using Services;
-@using Data.Model;
-@using Data;
-@using ValCavalluBot.wwwroot.Components;
 @inject NavigationManager NavigationManager;
 @inject ISettingsService SettingsService;
 @inject IBotManagerService BotManagerService;
@@ -17,27 +14,54 @@
 <div class="row mt-3 mb-3">
     <div class="col-md-4">
         <label class="font-weight-bold">Howrse Benutzername</label>
-        <input class="form-control" @bind="BotSettings.Credentials.HowrseUsername" />
+        <input class="form-control" @bind-value="BotSettings.Credentials.HowrseUsername" />
     </div>
     <div class="col-md-4">
         <label class="font-weight-bold">Howrse Password</label>
-        <input type="password" class="form-control" @bind="BotSettings.Credentials.HowrsePassword" />
+        <input type="password" class="form-control" @bind-value="BotSettings.Credentials.HowrsePassword" />
     </div>
     <div class="col-md-4">
         <label class="font-weight-bold">Howrse Server</label>
-        <input class="form-control" @bind="BotSettings.Server" />
+        <input class="form-control" @bind-value="BotSettings.Server" />
     </div>
 </div>
 <hr />
 <div class="row mt-3 mb-3">
-    @foreach (HowrseActionCheckboxModel howrseAction in HowrseActionCheckboxModels)
-    {
-        <HowrseActionCheckboxComponent HowrseActionCheckboxModel="howrseAction"></HowrseActionCheckboxComponent>
-    }
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Farm/SVG/5996 - Wheat.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Food.PerformFoodAction"  />
+    </div>
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Grooming/SVG/Hydrotherapy.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Drink.PerformDrinkAction" />
+    </div>
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/HorseRacing/SVG/12.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Stroke.PerformStrokeAction" />
+    </div>
 </div>
 <div class="row mt-3 mb-3">
-    <div class="col-md-2">
-       
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Grooming/SVG/Pet Brush.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Groom.PerformGroomAction" />
+    </div>
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Farm/SVG/5992 - Vegetables.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Carrot.PerformCarrotAction" />
+    </div>
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Energy/SVG/flash.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Mash.PerformMashAction" />
+    </div>
+</div>
+<div class="row mt-3 mb-3">
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Sleep/SVG/CLOUD AND MOON.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Sleep.PerformSleepAction" />
+    </div>
+    <div class="col-md-3 align-content-center mt-2 mb-2">
+        <img src="/ICON/Aging/SVG/Lineal Color/Color_20.svg" class="actionImage" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Age.PerformAgingAction" />
     </div>
 </div>
 <hr />
@@ -56,13 +80,11 @@
     public string Id { get; set; }
 
     private BotSettingsModel BotSettings { get; set; }
-    private List<HowrseActionCheckboxModel> HowrseActionCheckboxModels { get; set; }
+
 
     protected override void OnInitialized()
     {
         BotSettings = BotManagerService.GetBot(Id).Settings;
-        HowrseActionCheckboxModels = HowrseActionHelper.Actions;
-
     }
 
     private void Save()
@@ -70,20 +92,6 @@
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
-
-        BotManagerService.AddTaskToQue(Id, new()
-        {
-            Name = "feeding",
-            TaskType = HowrseTaskType.Feeding
-
-        });
-
-        BotManagerService.AddTaskToQue(Id, new()
-        {
-            Name = "drinking",
-            TaskType = HowrseTaskType.Drinking
-
-        });
 
         NavigationManager.NavigateTo("/dashboard");
     }
@@ -97,4 +105,5 @@
     {
 
     }
+
 }

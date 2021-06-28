@@ -9,10 +9,10 @@ namespace ValCavalluBot.Services
     interface IBotManagerService
     {
         Task StartBot(string botId);
+        Task StopBot(string botId);
         void CreateBot(BotSettingsModel botSettings);
         List<HowrseBotModel> GetBots();
         HowrseBotModel GetBot(string botId);
         void DeleteBot(string botId);
-        void AddTaskToQue(string botId, HowrseTaskModel howrseTask);
     }
 }

@@ -1,11 +1,13 @@
 ﻿@inject NavigationManager NavigationManager;
 @page "/";
 @page "/dashboard";
+@using ValCavalluBot.wwwroot.Components;
 @using Shares
 @using Shares.Model;
 @using Services;
 @using Shares.Enum;
 @inject IBotManagerService BotManagerService;
+@inject NavigationManager NavigationManager;
 
 <link rel="stylesheet" href="/css/Index.css" />
 <h1>Dashboard</h1>
@@ -19,50 +21,26 @@
             <tr>
                 <th>Howrse Account</th>
                 <th>Bot Id</th>
-                <th>Status</th>
+                <th>Aufgabe</th>
+                <th>Start/Stop</th>
                 <th>Löschen</th>
+                <th></th>
             </tr>
         </thead>
-        @foreach (HowrseBotModel bot in Bots)
-        {
-            <tr>
-                <td><a href="@string.Format("/bots/{0}", bot.Id)">@bot.Settings.Credentials.HowrseUsername</a></td>
-                <td>@bot.Id</td>
-                <td>
-                    @switch (bot.Status)
-                    {
-                        case Shares.Enum.BotClientStatus.Stopped:
-                            <button class="btn btn-success" type="button" @onclick="@(e => StartBot(bot.Id))">
-                                <span role="status" aria-hidden="true">
-                                    Start
-                                </span>
-                            </button>
-                            break;
-                        case Shares.Enum.BotClientStatus.Idle:
-                            <button class="btn btn-secondary" type="button" @onclick="@(e => StopBot(bot.Id))">                                
-                                Stoppen
-                            </button>
-                            break;
-                        case Shares.Enum.BotClientStatus.Working:
-                            <button class="btn btn-primary" type="button">
-                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
-                                </span>
-                                Abbrechen
-                            </button>
-                            break;
-                        default:
-                            break;
-                    }
-                </td>
-                <td>
-                    <input type="button" class="btn btn-danger" @onclick="@(e => Delete(bot.Id))" value="Löschen" />
-                </td>
-            </tr>
-        }
+        <tbody>
+            @foreach (HowrseBotModel bot in Bots)
+            {
+                <BotDetailsComponent Bot="bot"></BotDetailsComponent>
+            }
+        </tbody>
     </table>
 </div>
 @code{
 
+    private void MoveToBotCreation()
+    {
+        NavigationManager.NavigateTo("/newbot");
+    }
     private List<HowrseBotModel> Bots { get; set; }
 
     protected override void OnInitialized()
@@ -75,36 +53,5 @@
         }
     }
 
-    private void MoveToBotCreation()
-    {
-        NavigationManager.NavigateTo("/newbot");
-    }
-
-    //TODO: delete bot
-    private void Delete(string botId)
-    {
-        Console.WriteLine(botId);
-    }
-
-    //TODO: start bot
-    private void StartBot(string botId)
-    {
-        HowrseBotModel bot = Bots.Single(_ => _.Id == botId);
-
-        bot.OnBotStatusChanged += OnBotStatusChangedEvent;
-
-        BotManagerService.StartBot(botId);
-    }
-
-    //TODO: stop bot
-    private void StopBot(string botId)
-    {
-
-    }
-
-    private void OnBotStatusChangedEvent(BotClientStatus status)
-    {
-        InvokeAsync(() => StateHasChanged()).ConfigureAwait(true);
-    }
 
 }
