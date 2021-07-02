@@ -10,6 +10,16 @@ namespace Shares.Enum
     {
         Login,
         Logout,
+        Füttern,
+        Tränken,
+        Streicheln,
+        Striegeln,
+        Karotte,
+        Mash,
+        Schlafen,
+        Altern,
+        Spielen,
+        Säugen,
         Keine
     }
 }

@@ -17,6 +17,7 @@ namespace Shares.Model
         public event Action<BotClientCurrentAction> OnBotCurrentActionChanged;
 
         public BotSettingsModel Settings = new();
+        public HTMLActionsModel HTMLActions = new();
         public string Id { get; set; }
         public string HowrseUserId { get; set; }
         public string SID { get; set; }

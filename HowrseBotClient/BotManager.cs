@@ -8,12 +8,16 @@ using System.Web;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using HowrseBotClient.Model;
+using HowrseBotClient.Enum;
+using HowrseBotClient.Class;
 
 namespace HowrseBotClient
 {
     public static class BotManager
     {
         private static List<HowrseBotModel> Bots = new List<HowrseBotModel>();
+        
 
         public static void CreateBot(BotSettingsModel botSettings)
         {
@@ -41,7 +45,12 @@ namespace HowrseBotClient
             bot.Status = BotClientStatus.Started;
             bot.CurrentAction = BotClientCurrentAction.Login;
 
-            await Login(bot);
+            bool success = await Login(bot);
+
+            if (!success) return;
+
+            await PerformActions(bot);
+
         }
         public static async Task StopBot(string botId)
         {
@@ -54,7 +63,7 @@ namespace HowrseBotClient
         }
         private static void Bot_OnBotStatusChanged(BotClientStatus status)
         {
-            
+
         }
         public static List<HowrseBotModel> GetBots()
         {
@@ -75,9 +84,9 @@ namespace HowrseBotClient
         {
             return Bots.Single(_ => _.Id == botId);
         }
-        public static async Task Login(HowrseBotModel bot)
+        public static async Task<bool> Login(HowrseBotModel bot)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 string csrf = string.Empty;
                 string auth_token = string.Empty;
@@ -89,7 +98,7 @@ namespace HowrseBotClient
                 //tolower?
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
-                
+
                 string serverResponse = Connection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
 
                 HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
@@ -98,7 +107,7 @@ namespace HowrseBotClient
                 {
                     bot.Status = BotClientStatus.Error;
                     bot.CurrentAction = BotClientCurrentAction.Keine;
-                    return;
+                    return false;
                 }
 
                 Connection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
@@ -122,11 +131,14 @@ namespace HowrseBotClient
                     {
                         bot.Settings.HowrseAccountType = HowrseAccountType.Normal;
                     }
+
+                    return true;
                 }
                 else
                 {
                     bot.Status = BotClientStatus.Error;
                     bot.CurrentAction = BotClientCurrentAction.Keine;
+                    return false;
                 }
             });
         }
@@ -135,12 +147,55 @@ namespace HowrseBotClient
             await Task.Run(() =>
             {
                 bot.CurrentAction = BotClientCurrentAction.Logout;
-                Connection.Post("https://www.howrse.de/site/doLogOut", $"sid={bot.SID}");               
+                Connection.Post("https://www.howrse.de/site/doLogOut", $"sid={bot.SID}");
             });
         }
-        private static async Task PerformActions()
+        private static async Task PerformActions(HowrseBotModel bot)
         {
+            bot.Status = BotClientStatus.Started;
 
+            if (bot.Settings.Actions.Drink.PerformDrinkAction)
+            {
+                await PerformDrinking(bot);
+            }
+
+            if (bot.Settings.Actions.Stroke.PerformStrokeAction)
+            {
+
+            }
+
+            if (bot.Settings.Actions.Food.PerformFoodAction)
+            {
+                
+            }
+
+            if (bot.Settings.Actions.Groom.PerformGroomAction)
+            {
+
+            }
+
+            if (bot.Settings.Actions.Carrot.PerformCarrotAction)
+            {
+
+            }
+
+            if (bot.Settings.Actions.Mash.PerformMashAction)
+            {
+
+            }
+
+        }
+        private static async Task PerformDrinking(HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                bot.CurrentAction = BotClientCurrentAction.Tränken;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.DrinkingAction, bot.Settings);
+                               
+                //AfterActionHtmlResponse = Connection.Post(endPoint, (AuthToken.Stroke + "=" + GetCsrfToken() + "&" + TaskToken.Stroke[0] + "=" + horseId + "&" + TaskToken.Stroke[1] + "=" + xClickCoord + "&" + TaskToken.Stroke[2] + "=" + yClickCoord).ToLower());
+            });
         }
     }
 }
