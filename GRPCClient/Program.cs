@@ -1,7 +1,6 @@
 ﻿using Grpc.Net.Client;
 using System;
 using GRPCClient;
-using GRPCClient.Protos;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -17,22 +16,24 @@ namespace GRPCClient
 
             var client = new BreedingHorseCollector.BreedingHorseCollectorClient(channel);
 
-            CollectorRequestModel request = new()
-            {               
+            BreedingCollectorRequestModel request = new()
+            {
                 Server = "www.howrse.de",
-                UserId = "12345"
+                UserId = "10643354"
             };
 
-            request.BreedingIds.Add("12345");
+            BreedingCollectorResponseModel response;
 
-            using var call = client.GetHorsesFromBreedings(request);
+            response = await client.GetBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(10));
 
-            while (await call.ResponseStream.MoveNext(new()))
-            {
-                var responseItem = call.ResponseStream.Current;
+            //using var call = client.GetBreedings(request);
 
-                Console.WriteLine(responseItem.ID);
-            }
+            //while (await call.ResponseStream.MoveNext(new()))
+            //{
+            //    var responseItem = call.ResponseStream.Current;
+
+            //    Console.WriteLine(responseItem.ID);
+            //}
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();

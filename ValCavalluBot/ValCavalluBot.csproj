@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GRPCClient\GRPCClient.csproj" />
     <ProjectReference Include="..\HowrseBotClient\HowrseBotClient.csproj" />
     <ProjectReference Include="..\Shares\Shares.csproj" />
   </ItemGroup>

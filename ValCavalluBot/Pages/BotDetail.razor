@@ -6,6 +6,7 @@
 @inject NavigationManager NavigationManager;
 @inject ISettingsService SettingsService;
 @inject IBotManagerService BotManagerService;
+@inject IGRPCService GRPCService;
 
 
 
@@ -30,7 +31,7 @@
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Farm/SVG/5996 - Wheat.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Food.PerformFoodAction"  />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Food.PerformFoodAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Grooming/SVG/Hydrotherapy.svg" class="actionImage" />
@@ -65,12 +66,26 @@
         <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Age.PerformAgingAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-       
+
     </div>
 </div>
 <hr />
 <div class="row">
     <div class="col">
+        @if (Breedings.Count == 0)
+        {
+            <div class="d-flex justify-content-center">
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
         <HowrseBreedingsList Breedings="Breedings"></HowrseBreedingsList>
     </div>
 </div>
@@ -89,12 +104,12 @@
     public string Id { get; set; }
 
     private BotSettingsModel BotSettings { get; set; }
-    private List<HowrseBreedingModel> Breedings;
+    private List<HowrseBreedingModel> Breedings = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         BotSettings = BotManagerService.GetBot(Id).Settings;
-        Breedings = BotSettings.Breedings;
+        Breedings = await GRPCService.GetBreedings();
     }
 
     private void Save()

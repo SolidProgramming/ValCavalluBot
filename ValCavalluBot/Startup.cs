@@ -36,6 +36,7 @@ namespace ValCavalluBot
             services.AddServerSideBlazor();
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<IBotManagerService, BotManagerService>();
+            services.AddSingleton<IGRPCService, GRPCService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
