@@ -1,0 +1,20 @@
+﻿@using Shares.Model;
+
+<!-- Default checked -->
+<div class="custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" id="check@(Index)" checked="@HowrseBreeding.Checked" @onchange="OnCheckedChanged">
+    <label class="custom-control-label" for="check@(Index)">@HowrseBreeding.Name</label>
+</div>
+
+@code {
+    [Parameter]
+    public HowrseBreedingModel HowrseBreeding { get; set; }
+
+    [Parameter]
+    public int Index { get; set; }
+
+    private void OnCheckedChanged()
+    {
+        HowrseBreeding.Checked = !HowrseBreeding.Checked;
+    }
+}

@@ -2,6 +2,7 @@
 @using Shares.Model;
 @using Shares.Enum;
 @using Services;
+@using ValCavalluBot.wwwroot.Components;
 @inject NavigationManager NavigationManager;
 @inject ISettingsService SettingsService;
 @inject IBotManagerService BotManagerService;
@@ -68,6 +69,11 @@
     </div>
 </div>
 <hr />
+<div class="row">
+    <div class="col">
+        <HowrseBreedingsList Breedings="Breedings"></HowrseBreedingsList>
+    </div>
+</div>
 <div class="row mt-3 mb-3">
     <div class="col">
         <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
@@ -83,16 +89,20 @@
     public string Id { get; set; }
 
     private BotSettingsModel BotSettings { get; set; }
-
+    private List<HowrseBreedingModel> Breedings;
 
     protected override void OnInitialized()
     {
         BotSettings = BotManagerService.GetBot(Id).Settings;
+        Breedings = BotSettings.Breedings;
     }
 
     private void Save()
     {
         List<HowrseBotModel> bots = BotManagerService.GetBots();
+
+        HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
+        bot.Settings.Breedings = Breedings;
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 

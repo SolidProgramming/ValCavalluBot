@@ -1,0 +1,18 @@
+﻿@using ValCavalluBot.wwwroot.Components;
+@using Shares.Model;
+<ul>
+    @foreach (HowrseBreedingModel breeding in Breedings)
+    {
+        <li class="list-group-item">
+            <HowrseBreedingListItem HowrseBreeding="breeding" Index="Index"></HowrseBreedingListItem>            
+        </li>
+        Index++;
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public List<HowrseBreedingModel> Breedings { get; set; }
+
+    private int Index = 0;
+}
