@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shares\Shares.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Protobuf Include="Protos\breedinghoresecollector.proto" GrpcServices="Client" />
   </ItemGroup>
 

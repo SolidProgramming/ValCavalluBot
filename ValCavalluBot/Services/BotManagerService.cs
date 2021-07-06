@@ -10,9 +10,9 @@ namespace ValCavalluBot.Services
 {
     public class BotManagerService : IBotManagerService
     {
-        public void CreateBot(BotSettingsModel botSettings)
+        public HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
-            BotManager.CreateBot(botSettings);
+            return BotManager.CreateBot(botSettings);
         }
         public void DeleteBot(string botId)
         {
@@ -33,6 +33,10 @@ namespace ValCavalluBot.Services
         public async Task StopBot(string botId)
         {
             await BotManager.StopBot(botId);
+        }
+        public async Task<bool> TestLogin(HowrseBotModel bot)
+        {
+            return await BotManager.LoginTest(bot);
         }
     }
 }

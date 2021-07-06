@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shares.Model;
 
 namespace GRPCClient
 {
     public static class GRPCClient
     {
-        public static async Task<BreedingCollectorResponseModel> GetBreedings()
+        public static async Task<BreedingCollectorResponseModel> GetBreedings(HowrseBotModel bot)
         {
             var channel = GrpcChannel.ForAddress("https://localhost:8869");
 
@@ -17,8 +18,8 @@ namespace GRPCClient
 
             BreedingCollectorRequestModel request = new()
             {
-                Server = "www.howrse.de",
-                UserId = "3676376"
+                Server = bot.Settings.Server,
+                UserId = bot.HowrseUserId
             };
 
             return await client.GetBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(10));

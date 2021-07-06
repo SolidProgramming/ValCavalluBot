@@ -16,54 +16,54 @@
 <div class="row mt-3 mb-3">
     <div class="col-md">
         <label class="font-weight-bold">Howrse Benutzername</label>
-        <input class="form-control" @bind-value="BotSettings.Credentials.HowrseUsername" />
+        <input class="form-control" @bind-value="Bot.Settings.Credentials.HowrseUsername" />
     </div>
     <div class="col-md">
         <label class="font-weight-bold">Howrse Password</label>
-        <input type="password" class="form-control" @bind-value="BotSettings.Credentials.HowrsePassword" />
+        <input type="password" class="form-control" @bind-value="Bot.Settings.Credentials.HowrsePassword" />
     </div>
     <div class="col-md">
         <label class="font-weight-bold">Howrse Server</label>
-        <input class="form-control" @bind-value="BotSettings.Server" />
+        <input class="form-control" @bind-value="Bot.Settings.Server" />
     </div>
 </div>
 <hr />
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Farm/SVG/5996 - Wheat.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Food.PerformFoodAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Food.PerformFoodAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Grooming/SVG/Hydrotherapy.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Drink.PerformDrinkAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Drink.PerformDrinkAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/HorseRacing/SVG/12.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Stroke.PerformStrokeAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Stroke.PerformStrokeAction" />
     </div>
 </div>
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Grooming/SVG/Pet Brush.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Groom.PerformGroomAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Groom.PerformGroomAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Farm/SVG/5992 - Vegetables.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Carrot.PerformCarrotAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Carrot.PerformCarrotAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Energy/SVG/flash.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Mash.PerformMashAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Mash.PerformMashAction" />
     </div>
 </div>
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Sleep/SVG/CLOUD AND MOON.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Sleep.PerformSleepAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Sleep.PerformSleepAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <img src="/ICON/Aging/SVG/Lineal Color/Color_20.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@BotSettings.Actions.Age.PerformAgingAction" />
+        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Age.PerformAgingAction" />
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
 
@@ -81,7 +81,7 @@
 </div>
 <div class="row">
     <div class="col">
-        @if (Breedings.Count == 0)
+        @if (Bot.Settings.Breedings.Count == 0)
         {
             <div class="d-flex justify-content-center mt-2">
                 <div class="spinner-grow text-warning" role="status">
@@ -95,7 +95,7 @@
                 </div>
             </div>
         }
-        <HowrseBreedingsList Breedings="Breedings"></HowrseBreedingsList>
+        <HowrseBreedingsList Breedings="Bot.Settings.Breedings"></HowrseBreedingsList>
     </div>
 </div>
 <div class="row mt-3 mb-3">
@@ -112,13 +112,12 @@
     [Parameter]
     public string Id { get; set; }
 
-    private BotSettingsModel BotSettings { get; set; }
-    private List<HowrseBreedingModel> Breedings = new();
+    private HowrseBotModel Bot { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        BotSettings = BotManagerService.GetBot(Id).Settings;
-        Breedings = await GRPCService.GetBreedings();
+        Bot = BotManagerService.GetBot(Id);        
+        Bot.Settings.Breedings = await GRPCService.GetBreedings(Bot);
     }
 
     private void Save()
@@ -126,7 +125,7 @@
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
         HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
-        bot.Settings.Breedings = Breedings;
+        bot.Settings.Breedings = Bot.Settings.Breedings;
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 

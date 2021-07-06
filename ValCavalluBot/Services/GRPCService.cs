@@ -9,10 +9,10 @@ namespace ValCavalluBot.Services
 {
     public class GRPCService : IGRPCService
     {
-        public async Task<List<HowrseBreedingModel>> GetBreedings()
+        public async Task<List<HowrseBreedingModel>> GetBreedings(HowrseBotModel bot)
         {
             List<HowrseBreedingModel> breedings = new();
-            BreedingCollectorResponseModel breedingResponse = await GRPCClient.GRPCClient.GetBreedings();
+            BreedingCollectorResponseModel breedingResponse = await GRPCClient.GRPCClient.GetBreedings(bot);
 
             for (int i = 0; i < breedingResponse.Breedings.Count; i++)
             {
@@ -21,7 +21,7 @@ namespace ValCavalluBot.Services
                     Checked = false,
                     ID = breedingResponse.Breedings[i].BreedingId,
                     Name = breedingResponse.Breedings[i].BreedingName
-                }); ;
+                });
             }
 
             return breedings;

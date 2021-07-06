@@ -10,9 +10,10 @@ namespace ValCavalluBot.Services
     {
         Task StartBot(string botId);
         Task StopBot(string botId);
-        void CreateBot(BotSettingsModel botSettings);
+        HowrseBotModel CreateBot(BotSettingsModel botSettings);
         List<HowrseBotModel> GetBots();
         HowrseBotModel GetBot(string botId);
         void DeleteBot(string botId);
+        Task<bool> TestLogin(HowrseBotModel bot);
     }
 }

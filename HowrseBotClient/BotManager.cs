@@ -19,7 +19,7 @@ namespace HowrseBotClient
         private static List<HowrseBotModel> Bots = new List<HowrseBotModel>();
         
 
-        public static void CreateBot(BotSettingsModel botSettings)
+        public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
             botSettings.Credentials.HowrsePassword = HttpUtility.UrlEncode(botSettings.Credentials.HowrsePassword);
 
@@ -30,6 +30,8 @@ namespace HowrseBotClient
             };
 
             Bots.Add(bot);
+
+            return bot;
         }
         public static void DeleteBot(string botId)
         {
@@ -84,7 +86,7 @@ namespace HowrseBotClient
         {
             return Bots.Single(_ => _.Id == botId);
         }
-        public static async Task<bool> Login(HowrseBotModel bot)
+        private static async Task<bool> Login(HowrseBotModel bot)
         {
             return await Task.Run(() =>
             {
@@ -95,7 +97,8 @@ namespace HowrseBotClient
 
                 html = Connection.Get("https://" + bot.Settings.Server + "/");
 
-                //tolower?
+                if (string.IsNullOrEmpty(html)) return false;
+               
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
 
@@ -142,7 +145,47 @@ namespace HowrseBotClient
                 }
             });
         }
-        public static async Task Logout(HowrseBotModel bot)
+        public static async Task<bool> LoginTest(HowrseBotModel bot)
+        {
+            return await Task.Run(() =>
+            {
+                string csrf = string.Empty;
+                string auth_token = string.Empty;
+                string html = string.Empty;
+                string sid = string.Empty;
+
+                html = Connection.Get("https://" + bot.Settings.Server + "/");
+
+                if (string.IsNullOrEmpty(html)) return false;
+
+                auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
+                csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
+
+                string serverResponse = Connection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
+
+                HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
+
+                if (howrseServerLoginResponse.errors.Count > 0)
+                {                   
+                    return false;
+                }
+
+                Connection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
+                html = Connection.Get("https://" + bot.Settings.Server + "/jeu/");
+
+                if (html.Contains("Equus"))
+                {
+                    bot.HowrseUserId = Regex.Match(html, "href=\"/joueur/fiche/\\?id=(\\d+)\"><span class").Groups[1].Value;
+                    bot.SID = Regex.Match(html, "sid=(.*?)'}\\)\\);").Groups[1].Value;
+                    return true;
+                }
+                else
+                {                   
+                    return false;
+                }
+            });
+        }
+        private static async Task Logout(HowrseBotModel bot)
         {
             await Task.Run(() =>
             {

@@ -55,9 +55,9 @@ namespace Shares
 
                 return ServerResponse;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw;
+                return null;
             }
 
 
@@ -99,7 +99,7 @@ namespace Shares
             }
             catch (Exception)
             {
-                throw;
+                return null;
             }
 
         }

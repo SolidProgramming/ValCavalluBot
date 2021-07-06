@@ -23,26 +23,42 @@
 </div>
 <div class="row mt-3 mb-3">
     <div class="col">
-        <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
+        <button class="btn btn-success form-control" @onclick="Save" disabled="@TestingInProgress">
+            @if (TestingInProgress)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            }
+            Speichern
+        </button>
     </div>
     <div class="col">
-        <button class="btn btn-danger form-control" @onclick="Cancel">Abbrechen</button>
+        <button class="btn btn-danger form-control" @onclick="Cancel" disabled="@TestingInProgress">Abbrechen</button>
     </div>
 </div>
 
 
 @code {
-
+    private bool TestingInProgress;
+    private bool LoginTestSucceeded;
     private BotSettingsModel BotSettings { get; set; } = new();
 
-    private void Save()
-    {        
-        BotManagerService.CreateBot(BotSettings);
+    private async Task Save()
+    {
+        TestingInProgress = true;
+        HowrseBotModel bot = BotManagerService.CreateBot(BotSettings);
+
+        LoginTestSucceeded = await BotManagerService.TestLogin(bot);
+
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 
-        NavigationManager.NavigateTo("/dashboard");
+        TestingInProgress = false;
+
+        if (LoginTestSucceeded)
+        {
+            NavigationManager.NavigateTo("/dashboard");
+        }
     }
 
     private void Cancel()
