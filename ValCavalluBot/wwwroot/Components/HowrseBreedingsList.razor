@@ -1,10 +1,11 @@
 ﻿@using ValCavalluBot.wwwroot.Components;
 @using Shares.Model;
-<ul>
+
+<ul class="row">
     @foreach (HowrseBreedingModel breeding in Breedings)
     {
-        <li class="list-group-item">
-            <HowrseBreedingListItem HowrseBreeding="breeding" Index="Index"></HowrseBreedingListItem>            
+        <li class="list-group-item col-md-3">
+            <HowrseBreedingListItem HowrseBreeding="breeding" Index="Index"></HowrseBreedingListItem>
         </li>
         Index++;
     }
