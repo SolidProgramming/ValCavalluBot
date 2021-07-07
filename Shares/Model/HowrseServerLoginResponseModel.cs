@@ -8,10 +8,10 @@ namespace Shares.Model
 {
     public struct HowrseServerLoginResponseModel
     {
-        public FieldsErrors fieldsErrors { get; set; }
-        public string errorsText { get; set; }
-        public string messageText { get; set; }
-        public List<string> errors { get; set; }
-        public object message { get; set; }
+        public FieldsErrors FieldsErrors { get; set; }
+        public string ErrorsText { get; set; }
+        public string MessageText { get; set; }
+        public List<string> Errors { get; set; }
+        public object Message { get; set; }
     }
 }

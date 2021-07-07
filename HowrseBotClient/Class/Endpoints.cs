@@ -16,6 +16,10 @@ namespace HowrseBotClient.Class
             {
                 Endpoint.DrinkingAction,
                 "elevage/chevaux/doDrink"
+            },
+            {
+                Endpoint.Horse,
+                "elevage/chevaux/"
             }
         };
 

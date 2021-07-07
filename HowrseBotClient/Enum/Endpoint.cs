@@ -20,6 +20,7 @@ namespace HowrseBotClient.Enum
         CentreVendor,
         AccShare,
         Friends,
-        Boutique
+        Boutique,
+        Horse
     }
 }

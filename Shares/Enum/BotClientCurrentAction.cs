@@ -20,6 +20,7 @@ namespace Shares.Enum
         Altern,
         Spielen,
         Säugen,
+        PferdWechseln,
         Keine
     }
 }

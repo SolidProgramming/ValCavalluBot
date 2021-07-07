@@ -67,7 +67,6 @@ namespace HowrseBotClient.Class
         {
             return Regex.Match(htmlActions.CurrentHtml, "value=\"(.{32})\" name=").Groups[1].Value;
         }
-
         private static string GetAction(HowrseTaskType taskType)
         {
             return HowrseTaskNames.Single(a => a.Key == taskType).Value;

@@ -20,9 +20,7 @@ namespace HowrseBotClient
         
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
-        {
-            botSettings.Credentials.HowrsePassword = HttpUtility.UrlEncode(botSettings.Credentials.HowrsePassword);
-
+        {            
             HowrseBotModel bot = new HowrseBotModel()
             {
                 Id = Guid.NewGuid().ToString(),
@@ -95,30 +93,30 @@ namespace HowrseBotClient
                 string html = string.Empty;
                 string sid = string.Empty;
 
-                html = Connection.Get("https://" + bot.Settings.Server + "/");
+                html = bot.OwlientConnection.Get("https://" + bot.Settings.Server + "/");
 
                 if (string.IsNullOrEmpty(html)) return false;
                
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
 
-                string serverResponse = Connection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
+                string serverResponse = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
 
                 HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
 
-                if (howrseServerLoginResponse.errors.Count > 0)
+                if (howrseServerLoginResponse.Errors.Count > 0)
                 {
                     bot.Status = BotClientStatus.Error;
                     bot.CurrentAction = BotClientCurrentAction.Keine;
                     return false;
                 }
 
-                Connection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
-                html = Connection.Get("https://" + bot.Settings.Server + "/jeu/");
+                bot.OwlientConnection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
+                html = bot.OwlientConnection.Get("https://" + bot.Settings.Server + "/jeu/");
 
                 if (html.Contains("Equus"))
                 {
-                    bot.HowrseUserId = Regex.Match(html, "href=\"/joueur/fiche/\\?id=(\\d+)\"><span class").Groups[1].Value;
+                    bot.Settings.HowrseUserId = Regex.Match(html, "href=\"/joueur/fiche/\\?id=(\\d+)\"><span class").Groups[1].Value;
                     bot.SID = Regex.Match(html, "sid=(.*?)'}\\)\\);").Groups[1].Value;
 
                     if (html.Contains("/header/logo/vip/"))
@@ -154,28 +152,30 @@ namespace HowrseBotClient
                 string html = string.Empty;
                 string sid = string.Empty;
 
-                html = Connection.Get("https://" + bot.Settings.Server + "/");
+                Connection owlientConnection = new();
+
+                html = owlientConnection.Get("https://" + bot.Settings.Server + "/");
 
                 if (string.IsNullOrEmpty(html)) return false;
 
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
 
-                string serverResponse = Connection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
+                string serverResponse = owlientConnection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
 
                 HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
 
-                if (howrseServerLoginResponse.errors.Count > 0)
+                if (howrseServerLoginResponse.Errors.Count > 0)
                 {                   
                     return false;
                 }
 
-                Connection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
-                html = Connection.Get("https://" + bot.Settings.Server + "/jeu/");
+                owlientConnection.Get("https://" + bot.Settings.Server + "/jeu/?identification=1&redirectionMobile=yes");
+                html = owlientConnection.Get("https://" + bot.Settings.Server + "/jeu/");
 
                 if (html.Contains("Equus"))
                 {
-                    bot.HowrseUserId = Regex.Match(html, "href=\"/joueur/fiche/\\?id=(\\d+)\"><span class").Groups[1].Value;
+                    bot.Settings.HowrseUserId = Regex.Match(html, "href=\"/joueur/fiche/\\?id=(\\d+)\"><span class").Groups[1].Value;
                     bot.SID = Regex.Match(html, "sid=(.*?)'}\\)\\);").Groups[1].Value;
                     return true;
                 }
@@ -190,42 +190,50 @@ namespace HowrseBotClient
             await Task.Run(() =>
             {
                 bot.CurrentAction = BotClientCurrentAction.Logout;
-                Connection.Post("https://www.howrse.de/site/doLogOut", $"sid={bot.SID}");
+                bot.OwlientConnection.Post("https://www.howrse.de/site/doLogOut", $"sid={bot.SID}");
             });
         }
         private static async Task PerformActions(HowrseBotModel bot)
         {
-            bot.Status = BotClientStatus.Started;
-
-            if (bot.Settings.Actions.Drink.PerformDrinkAction)
+            await Task.Run(async () =>
             {
-                await PerformDrinking(bot);
-            }
+                //foreach breeding
+                //foreach horse in breeding
 
-            if (bot.Settings.Actions.Stroke.PerformStrokeAction)
-            {
+                bot.Status = BotClientStatus.Started;
 
-            }
+                await ChangeHorse("", bot);
 
-            if (bot.Settings.Actions.Food.PerformFoodAction)
-            {
-                
-            }
+                if (bot.Settings.Actions.Drink.PerformDrinkAction)
+                {
+                    await PerformDrinking(bot);
+                }
 
-            if (bot.Settings.Actions.Groom.PerformGroomAction)
-            {
+                if (bot.Settings.Actions.Stroke.PerformStrokeAction)
+                {
 
-            }
+                }
 
-            if (bot.Settings.Actions.Carrot.PerformCarrotAction)
-            {
+                if (bot.Settings.Actions.Food.PerformFoodAction)
+                {
 
-            }
+                }
 
-            if (bot.Settings.Actions.Mash.PerformMashAction)
-            {
+                if (bot.Settings.Actions.Groom.PerformGroomAction)
+                {
 
-            }
+                }
+
+                if (bot.Settings.Actions.Carrot.PerformCarrotAction)
+                {
+
+                }
+
+                if (bot.Settings.Actions.Mash.PerformMashAction)
+                {
+
+                }
+            });
 
         }
         private static async Task PerformDrinking(HowrseBotModel bot)
@@ -238,6 +246,17 @@ namespace HowrseBotClient
                 string endPoint = Endpoints.GetEndpoint(Endpoint.DrinkingAction, bot.Settings);
                                
                 //AfterActionHtmlResponse = Connection.Post(endPoint, (AuthToken.Stroke + "=" + GetCsrfToken() + "&" + TaskToken.Stroke[0] + "=" + horseId + "&" + TaskToken.Stroke[1] + "=" + xClickCoord + "&" + TaskToken.Stroke[2] + "=" + yClickCoord).ToLower());
+            });
+        }
+        private static async Task ChangeHorse(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
+                string endPoint = Endpoints.GetEndpoint(Endpoint.Horse, bot.Settings);
+                endPoint += $"cheval?id={horseId}";
+
+                bot.OwlientConnection.Get(endPoint);
             });
         }
     }

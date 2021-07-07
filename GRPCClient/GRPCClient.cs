@@ -19,7 +19,7 @@ namespace GRPCClient
             BreedingCollectorRequestModel request = new()
             {
                 Server = bot.Settings.Server,
-                UserId = bot.HowrseUserId
+                UserId = bot.Settings.HowrseUserId
             };
 
             return await client.GetBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(10));

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Shares
 {
-    public static class Connection
+    public class Connection
     {
-        static CookieCollection Cookies = new CookieCollection();
+        private CookieCollection Cookies = new CookieCollection();
 
-        public static string Post(string URL, string Post)
+        public string Post(string URL, string Post)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Shares
 
         }
 
-        public static string Get(string URL)
+        public string Get(string URL)
         {
 
             try
@@ -104,7 +104,7 @@ namespace Shares
 
         }
 
-        public static string Get(string URL, string cookName, out Cookie outCook)
+        public string Get(string URL, string cookName, out Cookie outCook)
         {
             outCook = null;
 

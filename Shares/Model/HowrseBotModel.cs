@@ -16,10 +16,12 @@ namespace Shares.Model
         public event Action<BotClientStatus> OnBotStatusChanged;
         public event Action<BotClientCurrentAction> OnBotCurrentActionChanged;
 
+        public Connection OwlientConnection = new();
+
         public BotSettingsModel Settings = new();
         public HTMLActionsModel HTMLActions = new();
-        public string Id { get; set; }
-        public string HowrseUserId { get; set; }
+
+        public string Id { get; set; }        
         public string SID { get; set; }
 
         private BotClientCurrentAction _CurrentAction = BotClientCurrentAction.Keine;
