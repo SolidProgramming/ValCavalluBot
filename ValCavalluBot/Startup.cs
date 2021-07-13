@@ -13,7 +13,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ValCavalluBot.Pages;
 using ValCavalluBot.Services;
+using ValCavalluBot.wwwroot.Components;
 
 namespace ValCavalluBot
 {
@@ -36,7 +38,8 @@ namespace ValCavalluBot
             services.AddServerSideBlazor();
             services.AddSingleton<ISettingsService, SettingsService>();
             services.AddSingleton<IBotManagerService, BotManagerService>();
-            services.AddSingleton<IGRPCService, GRPCService>();
+            services.AddSingleton<IGRPCService, GRPCService>();           
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

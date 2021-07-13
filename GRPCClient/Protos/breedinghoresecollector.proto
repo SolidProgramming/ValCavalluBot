@@ -3,25 +3,19 @@ syntax = "proto3";
 option csharp_namespace = "GRPCClient";
 
 service BreedingHorseCollector{
-	rpc GetHorsesFromBreedings (CollectorRequestModel) returns (stream CollectorResponseModel);
+	rpc GetHorsesFromBreedings (HorseCollectorRequestModel) returns (HorseCollectorResponseModel);
 	rpc GetBreedings (BreedingCollectorRequestModel) returns (BreedingCollectorResponseModel);
 }
 
-message CollectorRequestModel{
+message HorseCollectorRequestModel{
    repeated string BreedingIds = 1;
    string UserId = 2;
    string Server = 3;
 }
 
-message CollectorResponseModel{
-    string ID = 1;
-    int32 Age = 2;
-    bool AbleToBreed = 3;
-    bool InRidingCenter = 4;
-    bool Pregnant = 5;
-    string Sex = 6;
-    string Name = 7;
-    float Energy = 8;
+message HorseCollectorResponseModel
+{    
+    repeated string HorseIds = 1;
 }
 
 message BreedingCollectorRequestModel

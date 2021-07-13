@@ -3,6 +3,7 @@
 @using Services;
 @using Shares.Enum;
 @inject IBotManagerService BotManagerService;
+@inject IGRPCService GRPCService;
 
 <tr>
     <td><a href="@string.Format("/bots/{0}", Bot.Id)">@Bot.Settings.Credentials.HowrseUsername</a></td>
@@ -53,19 +54,24 @@
     [Parameter]
     public HowrseBotModel Bot { get; set; }
 
-    private bool Collapsed = true; 
+    private bool Collapsed = true;
 
     private void Delete()
     {
 
     }
 
-    private void StartBot()
+    private async Task StartBot()
     {
         Bot.OnBotStatusChanged += OnBotStatusChangedEvent;
         Bot.OnBotCurrentActionChanged += OnBotCurrentStatusChangedEvent;
 
-        BotManagerService.StartBot(Bot.Id);
+        Bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
+        Bot.Status = BotClientStatus.Started;
+
+        var horses = await GRPCService.GetHorsesFromBreedings(Bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), Bot);
+
+        await BotManagerService.StartBot(Bot.Id);
     }
 
     private void StopBot()

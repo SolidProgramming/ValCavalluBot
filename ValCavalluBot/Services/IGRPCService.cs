@@ -10,5 +10,6 @@ namespace ValCavalluBot.Services
     interface IGRPCService
     {
         Task<List<HowrseBreedingModel>> GetBreedings(HowrseBotModel bot);
+        Task<List<string>> GetHorsesFromBreedings(List<string> breedingIds, HowrseBotModel bot);
     }
 }

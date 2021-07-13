@@ -26,5 +26,13 @@ namespace ValCavalluBot.Services
 
             return breedings;
         }
+
+        public async Task<List<string>> GetHorsesFromBreedings(List<string> breedingIds, HowrseBotModel bot)
+        {
+            List<string> horseIds = new();
+            HorseCollectorResponseModel horsesResponse = await GRPCClient.GRPCClient.GetHorsesFromBreedings(breedingIds, bot);
+
+            return horsesResponse.HorseIds.ToList();
+        }
     }
 }

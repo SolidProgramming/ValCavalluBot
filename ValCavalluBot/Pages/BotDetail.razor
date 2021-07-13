@@ -3,10 +3,13 @@
 @using Shares.Enum;
 @using Services;
 @using ValCavalluBot.wwwroot.Components;
+@using ValCavalluBot.Classes;
 @inject NavigationManager NavigationManager;
 @inject ISettingsService SettingsService;
 @inject IBotManagerService BotManagerService;
 @inject IGRPCService GRPCService;
+
+
 
 
 
@@ -114,10 +117,22 @@
 
     private HowrseBotModel Bot { get; set; }
 
+
     protected override async Task OnInitializedAsync()
     {
-        Bot = BotManagerService.GetBot(Id);        
-        Bot.Settings.Breedings = await GRPCService.GetBreedings(Bot);
+        Bot = BotManagerService.GetBot(Id);
+        Bot.Settings.HowrseUserId = "3676376";
+
+        PageFirstRenderHandler.PageFirstRender(base.ToString());
+
+        if (base.ToString().IsFirstRender())
+        {
+            List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
+            if (breedingsFromServer.Count > 0)
+            {
+                Bot.Settings.Breedings = breedingsFromServer;
+            }
+        }
     }
 
     private void Save()
@@ -125,7 +140,7 @@
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
         HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
-        bot.Settings.Breedings = Bot.Settings.Breedings;
+        bot.Settings.ChosenBreedings = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 
@@ -135,11 +150,6 @@
     private void Cancel()
     {
         NavigationManager.NavigateTo("/dashboard");
-    }
-
-    private void AddTaskToQue(string botId)
-    {
-
     }
 
 }

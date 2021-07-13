@@ -42,9 +42,6 @@ namespace HowrseBotClient
 
             bot.OnBotStatusChanged += Bot_OnBotStatusChanged;
 
-            bot.Status = BotClientStatus.Started;
-            bot.CurrentAction = BotClientCurrentAction.Login;
-
             bool success = await Login(bot);
 
             if (!success) return;
