@@ -17,5 +17,13 @@ namespace HowrseBotClient.Class
 
             return new ButtonClickCoordinationsModel { X = xClickCoord, Y = yClickCoord };
         }
+        public static ButtonClickCoordinationsModel GetRandomClickCoordsFeedingButton()
+        {
+            Random rnd = new();
+            int xClickCoord = rnd.Next(5, 20);
+            int yClickCoord = rnd.Next(5, 110);
+
+            return new ButtonClickCoordinationsModel { X = xClickCoord, Y = yClickCoord };
+        }
     }
 }

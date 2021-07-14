@@ -12,7 +12,7 @@ namespace GRPCClient
     {
         public static async Task<BreedingCollectorResponseModel> GetBreedings(HowrseBotModel bot)
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:8869");
+            var channel = GrpcChannel.ForAddress("http://ddns.lucaweidmann.de:8081");
 
             var client = new BreedingHorseCollector.BreedingHorseCollectorClient(channel);
 
@@ -27,7 +27,7 @@ namespace GRPCClient
 
         public static async Task<HorseCollectorResponseModel> GetHorsesFromBreedings(List<string> breedingIds, HowrseBotModel bot)
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:8869");
+            var channel = GrpcChannel.ForAddress("http://ddns.lucaweidmann.de:8081");
 
             var client = new BreedingHorseCollector.BreedingHorseCollectorClient(channel);
 

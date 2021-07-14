@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GRPCClient\GRPCClient.csproj" />
     <ProjectReference Include="..\Shares\Shares.csproj" />
   </ItemGroup>
 

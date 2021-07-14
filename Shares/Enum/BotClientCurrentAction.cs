@@ -21,7 +21,7 @@ namespace Shares.Enum
         Spielen,
         Säugen,
         PferdWechseln,
-        PferdeSuchen,
+        PferdeSuchen,        
         Keine
     }
 }

@@ -7,19 +7,24 @@ namespace ValCavalluBot.Classes
 {
     public static class PageFirstRenderHandler
     {
-        private static Dictionary<string, bool> _firstRenderPages = new();
+        private static List<string> _firstRenderPages = new();
         private static string _moduleName;
          
         public static bool IsFirstRender(this string pageName)
         {
-            return !_firstRenderPages[pageName];
+            if (_firstRenderPages.Contains(pageName))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public static void PageFirstRender(string pageName)
         {
-            if (!_firstRenderPages.ContainsKey(pageName))
+            if (!_firstRenderPages.Contains(pageName))
             {
-                _firstRenderPages.Add(pageName, true);
+                _firstRenderPages.Add(pageName);
             }
         }
     }

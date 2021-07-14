@@ -18,6 +18,26 @@ namespace HowrseBotClient.Class
                 "elevage/chevaux/doDrink"
             },
             {
+                Endpoint.StrokingAction,
+                "elevage/chevaux/doStroke"
+            },
+            {
+                Endpoint.GroomingAction,
+                "elevage/chevaux/doGroom"
+            },
+            {
+                Endpoint.CarrotAction,
+                "elevage/chevaux/doEatTreat"
+            },
+            {
+                Endpoint.MashAction,
+                "elevage/chevaux/doEatTreat"
+            },
+            {
+                Endpoint.AgingAction,
+                "elevage/chevaux/doAge"
+            },
+            {
                 Endpoint.Horse,
                 "elevage/chevaux/"
             }

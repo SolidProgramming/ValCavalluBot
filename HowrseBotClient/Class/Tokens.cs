@@ -63,6 +63,39 @@ namespace HowrseBotClient.Class
                 Riding = GetAction(HowrseTaskType.Riding)
             };
         }
+        public static HowrseTaskTokenModel GetTaskTokenFromAction(HTMLActionsModel htmlActions)
+        {
+            return new()
+            {
+                Feeding = GetTaskTokenFromAction(HowrseTaskType.Feeding, htmlActions.AfterActionHtml),
+                Drink = GetTaskTokenFromAction(HowrseTaskType.Drinking, htmlActions.AfterActionHtml),
+                Stroke = GetTaskTokenFromAction(HowrseTaskType.Stroking, htmlActions.AfterActionHtml),
+                Groom = GetTaskTokenFromAction(HowrseTaskType.Grooming, htmlActions.AfterActionHtml),
+                Carrot = GetTaskTokenFromAction(HowrseTaskType.GiveCarrot, htmlActions.AfterActionHtml),
+                Mash = GetTaskTokenFromAction(HowrseTaskType.GiveMash, htmlActions.AfterActionHtml),
+                Sleep = GetTaskTokenFromAction(HowrseTaskType.Sleeping, htmlActions.AfterActionHtml),
+                Suckle = GetTaskTokenFromAction(HowrseTaskType.GiveSuckle, htmlActions.AfterActionHtml),
+                Aging = GetTaskTokenFromAction(HowrseTaskType.Aging, htmlActions.AfterActionHtml),
+                Riding = GetTaskTokenFromAction(HowrseTaskType.Riding, htmlActions.AfterActionHtml)
+            };
+        }
+        public static HowrseAuthTokenModel GetAuthTokenFromAction(HTMLActionsModel htmlActions)
+        {
+            return new()
+            {
+                Feeding = GetAuthTokenFromAction(HowrseTaskType.Feeding, htmlActions.AfterActionHtml),
+                Drink = GetAuthTokenFromAction(HowrseTaskType.Drinking, htmlActions.AfterActionHtml),
+                Stroke = GetAuthTokenFromAction(HowrseTaskType.Stroking, htmlActions.AfterActionHtml),
+                Groom = GetAuthTokenFromAction(HowrseTaskType.Grooming, htmlActions.AfterActionHtml),
+                Carrot = GetAuthTokenFromAction(HowrseTaskType.GiveCarrot, htmlActions.AfterActionHtml),
+                Mash = GetAuthTokenFromAction(HowrseTaskType.GiveMash, htmlActions.AfterActionHtml),
+                Sleep = GetAuthTokenFromAction(HowrseTaskType.Sleeping, htmlActions.AfterActionHtml),
+                Suckle = GetAuthTokenFromAction(HowrseTaskType.GiveSuckle, htmlActions.AfterActionHtml),
+                Aging = GetAuthTokenFromAction(HowrseTaskType.Aging, htmlActions.AfterActionHtml),
+                Riding = GetAuthTokenFromAction(HowrseTaskType.Riding, htmlActions.AfterActionHtml)
+
+            };
+        }
         public static string GetCsrfToken(HTMLActionsModel htmlActions)
         {
             return Regex.Match(htmlActions.CurrentHtml, "value=\"(.{32})\" name=").Groups[1].Value;
@@ -81,6 +114,17 @@ namespace HowrseBotClient.Class
         private static string GetAuthToken(HowrseTaskType taskType, string html)
         {
             return Regex.Match(html, "id=\"" + GetAction(taskType) + "(.{5})\" type").Groups[1].Value.ToLower();
+        }
+        private static string[] GetTaskTokenFromAction(HowrseTaskType taskType, string html)
+        {
+            return Regex.Matches(html, "name=\\\\\"" + GetAction(taskType) + "(.{10})")
+                            .Cast<Match>()
+                            .Select(m => m.Groups[1].Value.ToLower())
+                            .ToArray();
+        }
+        private static string GetAuthTokenFromAction(HowrseTaskType taskType, string html)
+        {
+            return Regex.Match(html, "id=\\\\\"" + GetAction(taskType) + "(.{5})\\\\\" type").Groups[1].Value.ToLower();
         }
     }
 }

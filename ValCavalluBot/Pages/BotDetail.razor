@@ -121,9 +121,6 @@
     protected override async Task OnInitializedAsync()
     {
         Bot = BotManagerService.GetBot(Id);
-        Bot.Settings.HowrseUserId = "3676376";
-
-        PageFirstRenderHandler.PageFirstRender(base.ToString());
 
         if (base.ToString().IsFirstRender())
         {
@@ -133,6 +130,8 @@
                 Bot.Settings.Breedings = breedingsFromServer;
             }
         }
+
+        PageFirstRenderHandler.PageFirstRender(base.ToString());
     }
 
     private void Save()

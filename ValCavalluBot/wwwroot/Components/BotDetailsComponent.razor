@@ -66,11 +66,6 @@
         Bot.OnBotStatusChanged += OnBotStatusChangedEvent;
         Bot.OnBotCurrentActionChanged += OnBotCurrentStatusChangedEvent;
 
-        Bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
-        Bot.Status = BotClientStatus.Started;
-
-        var horses = await GRPCService.GetHorsesFromBreedings(Bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), Bot);
-
         await BotManagerService.StartBot(Bot.Id);
     }
 

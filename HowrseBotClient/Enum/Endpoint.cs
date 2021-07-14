@@ -9,6 +9,11 @@ namespace HowrseBotClient.Enum
     public enum Endpoint
     {
         DrinkingAction,
+        StrokingAction,
+        GroomingAction,
+        CarrotAction,
+        MashAction,
+        AgingAction,
         Login,
         Main,
         Ranking,

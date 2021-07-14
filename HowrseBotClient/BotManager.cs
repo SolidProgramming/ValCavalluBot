@@ -11,16 +11,17 @@ using Newtonsoft.Json;
 using HowrseBotClient.Model;
 using HowrseBotClient.Enum;
 using HowrseBotClient.Class;
+using GRPCClient;
 
 namespace HowrseBotClient
 {
     public static class BotManager
     {
         private static List<HowrseBotModel> Bots = new List<HowrseBotModel>();
-        
+
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
-        {            
+        {
             HowrseBotModel bot = new HowrseBotModel()
             {
                 Id = Guid.NewGuid().ToString(),
@@ -85,6 +86,8 @@ namespace HowrseBotClient
         {
             return await Task.Run(() =>
             {
+                bot.Status = BotClientStatus.Started;
+
                 string csrf = string.Empty;
                 string auth_token = string.Empty;
                 string html = string.Empty;
@@ -93,7 +96,7 @@ namespace HowrseBotClient
                 html = bot.OwlientConnection.Get("https://" + bot.Settings.Server + "/");
 
                 if (string.IsNullOrEmpty(html)) return false;
-               
+
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
 
@@ -163,7 +166,7 @@ namespace HowrseBotClient
                 HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
 
                 if (howrseServerLoginResponse.Errors.Count > 0)
-                {                   
+                {
                     return false;
                 }
 
@@ -177,7 +180,7 @@ namespace HowrseBotClient
                     return true;
                 }
                 else
-                {                   
+                {
                     return false;
                 }
             });
@@ -194,55 +197,311 @@ namespace HowrseBotClient
         {
             await Task.Run(async () =>
             {
+                bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
                 //foreach breeding
                 //foreach horse in breeding
 
-                bot.Status = BotClientStatus.Started;
+                List<string> breedingIds = bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList();
+                HorseCollectorResponseModel response = await GRPCClient.GRPCClient.GetHorsesFromBreedings(breedingIds, bot);
 
-                await ChangeHorse("", bot);
+                foreach (string horseId in response.HorseIds)
+                {
+                    await PerformActions(horseId, bot);
+                }
+
+
+            });
+
+            async Task PerformActions(string horseId, HowrseBotModel bot)
+            {
+                await ChangeHorse(horseId, bot);
 
                 if (bot.Settings.Actions.Drink.PerformDrinkAction)
                 {
-                    await PerformDrinking(bot);
+                    await PerformDrinking(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Stroke.PerformStrokeAction)
                 {
-
+                    await PerformStroking(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Food.PerformFoodAction)
                 {
-
+                    await PerformFeeding(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Groom.PerformGroomAction)
                 {
-
+                    await PerformGrooming(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Carrot.PerformCarrotAction)
                 {
-
+                    await PerformGiveCarrot(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Mash.PerformMashAction)
                 {
+                    await PerformGiveMash(horseId, bot);
+                }
+
+                if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
+                {
 
                 }
-            });
+
+                if (bot.Settings.Actions.Age.PerformAgingAction)
+                {
+                    await PerformAging(horseId, bot);
+                }
+
+
+            }
 
         }
-        private static async Task PerformDrinking(HowrseBotModel bot)
+        private static async Task PerformDrinking(string horseId, HowrseBotModel bot)
         {
             await Task.Run(() =>
             {
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (taskTokens.Drink.Length == 0) return;
+
                 bot.CurrentAction = BotClientCurrentAction.Tränken;
                 ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
 
                 string endPoint = Endpoints.GetEndpoint(Endpoint.DrinkingAction, bot.Settings);
-                               
-                //AfterActionHtmlResponse = Connection.Post(endPoint, (AuthToken.Stroke + "=" + GetCsrfToken() + "&" + TaskToken.Stroke[0] + "=" + horseId + "&" + TaskToken.Stroke[1] + "=" + xClickCoord + "&" + TaskToken.Stroke[2] + "=" + yClickCoord).ToLower());
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Drink + "=" + csrfToken + "&" + taskTokens.Drink[0] + "=" + horseId + "&" + taskTokens.Drink[1] + "=" + coords.X + "&" + taskTokens.Drink[2] + "=" + coords.Y).ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+            });
+        }
+        private static async Task PerformStroking(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (taskTokens.Stroke.Length == 0) return;
+
+                bot.CurrentAction = BotClientCurrentAction.Streicheln;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.StrokingAction, bot.Settings);
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Stroke + "=" + csrfToken + "&" + taskTokens.Stroke[0] + "=" + horseId + "&" + taskTokens.Stroke[1] + "=" + coords.X + "&" + taskTokens.Stroke[2] + "=" + coords.Y).ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+            });
+        }
+        private static async Task PerformGrooming(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (taskTokens.Groom.Length == 0) return;
+
+                bot.CurrentAction = BotClientCurrentAction.Striegeln;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.GroomingAction, bot.Settings);
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Groom + "=" + csrfToken + "&" + taskTokens.Groom[0] + "=" + horseId + "&" + taskTokens.Groom[1] + "=" + coords.X + "&" + taskTokens.Groom[2] + "=" + coords.Y).ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+            });
+        }
+        private static async Task PerformGiveCarrot(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (string.IsNullOrEmpty(authtokens.Carrot)) return;
+
+                bot.CurrentAction = BotClientCurrentAction.Karotte;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.CarrotAction, bot.Settings);
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Carrot + "=" + csrfToken + "&id=" + horseId + "&friandise=carotte").ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+            });
+        }
+        private static async Task PerformGiveMash(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (string.IsNullOrEmpty(authtokens.Mash)) return;
+
+                bot.CurrentAction = BotClientCurrentAction.Mash;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.MashAction, bot.Settings);
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Mash + "=" + csrfToken + "&id=" + horseId + "&friandise=mash").ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+            });
+        }
+        private static async Task PerformAging(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (taskTokens.Aging.Length == 0 || authtokens.Aging == string.Empty)
+                {
+                    authtokens = Tokens.GetAuthTokenFromAction(bot.HTMLActions);
+                    taskTokens = Tokens.GetTaskTokenFromAction(bot.HTMLActions);
+                }
+
+                if (taskTokens.Aging.Length == 0 || authtokens.Aging == string.Empty) return;
+
+                bot.CurrentAction = BotClientCurrentAction.Altern;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                int horseAge = Convert.ToInt16(Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalAge = (\\d+);").Groups[1].Value);
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.AgingAction, bot.Settings);
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Aging + "=" + csrfToken + "&" + taskTokens.Aging[0] + "=" + horseId + "&" + taskTokens.Aging[1] + "=" + horseAge + "&" + taskTokens.Aging[2] + "=" + coords.X + "&" + taskTokens.Aging[3] + "=" + coords.Y).ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+            });
+        }
+        private static async Task PerformFeeding(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                string currentHayAmount = "0";
+                string currentOatsAmount = "0";
+                int neededHayAmount = 0;
+                int neededOatsAmount = 0;
+
+                string[] neededFood = new string[2];
+                string[] neededFood2 = new string[2];
+
+                neededFood = Regex.Matches(bot.HTMLActions.CurrentHtml, "-target\">(\\d+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
+                neededFood2 = Regex.Matches(bot.HTMLActions.AfterActionHtml, "-target\\\\\">(\\d+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
+
+                if (neededFood2.Length > 1)
+                {
+                    if (Convert.ToInt32(neededFood[0]) < Convert.ToInt32(neededFood2[0]) || Convert.ToInt32(neededFood[1]) < Convert.ToInt32(neededFood2[1]))
+                    {
+                        neededFood = neededFood2;
+                    }
+                }
+
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsFeedingButton();
+
+                string hayToken = Regex.Match(bot.HTMLActions.CurrentHtml, "type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;//Helper.GetBetween(html, "type=\"hidden\" name=\"feeding", "\" value=\"");
+                string oatToken = Regex.Match(bot.HTMLActions.CurrentHtml, "oatsSlider-sliderHidden\" type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;//Helper.GetBetween(html, "oatsSlider-sliderHidden\" type=\"hidden\" name=\"feeding", "\" value=\"");
+
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                int horseAge = Convert.ToInt16(Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalAge = (\\d+);").Groups[1].Value);
+
+                if (neededFood.Length == 2)
+                {
+
+                    if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Auto)
+                    {
+                        currentHayAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "fourrage-quantity\"> (\\d+) / <strong class=\"section-fourrage").Groups[1].Value;
+                        neededHayAmount = Convert.ToInt32(neededFood[0]) - Convert.ToInt32(currentHayAmount);
+
+                        currentOatsAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "avoine-quantity\"> (\\d+) / <strong class=\"section-avoine section-avoine").Groups[1].Value;
+                        neededOatsAmount = Convert.ToInt32(neededFood[1]) - Convert.ToInt32(currentOatsAmount);
+                    }
+                    else if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Manual)
+                    {
+                        neededHayAmount = Convert.ToInt16(bot.Settings.Actions.Food.AmountofHay);
+                        currentHayAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "fourrage-quantity\"> (\\d+) / <strong class=\"section-fourrage").Groups[1].Value;
+                        neededHayAmount -= Convert.ToInt16(currentHayAmount);
+
+                        neededOatsAmount = Convert.ToInt16(bot.Settings.Actions.Food.AmountofOat);
+                        currentOatsAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "avoine-quantity\"> (\\d+) / <strong class=\"section-avoine section-avoine").Groups[1].Value;
+                        neededOatsAmount -= Convert.ToInt16(currentOatsAmount);
+                    }
+                    else
+                    {
+                        // System.Windows.Forms.MessageBox.Show("Fehler: Futter Param Action Mode = NULL!(HAY&OAT)");
+                    }
+
+
+                    if (neededHayAmount > 0 && neededOatsAmount > 0)
+                    {
+                        bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/elevage/chevaux/doEat", (authtokens.Feeding + "=" + csrfToken + "&" + taskTokens.Feeding[0] + "=" + horseId + "&" + taskTokens.Feeding[1] + "=" + coords.X + "&" + taskTokens.Feeding[2] + "=" + coords.Y + "&" + hayToken + "=" + neededHayAmount + "&" + oatToken + "=" + neededOatsAmount).ToLower());
+
+                    }
+                    else if (neededHayAmount <= 0 && neededOatsAmount > 0)
+                    {
+                        bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/elevage/chevaux/doEat", (authtokens.Feeding + "=" + csrfToken + "&" + taskTokens.Feeding[0] + "=" + horseId + "&" + taskTokens.Feeding[1] + "=" + coords.X + "&" + taskTokens.Feeding[2] + "=" + coords.Y + "&" + hayToken + "=0&" + oatToken + "=" + neededOatsAmount).ToLower());
+
+                    }
+                    else if (neededHayAmount > 0 && neededOatsAmount <= 0)
+                    {
+                        bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/elevage/chevaux/doEat", (authtokens.Feeding + "=" + csrfToken + "&" + taskTokens.Feeding[0] + "=" + horseId + "&" + taskTokens.Feeding[1] + "=" + coords.X + "&" + taskTokens.Feeding[2] + "=" + coords.Y + "&" + hayToken + "=" + neededHayAmount + "&" + oatToken + "=0").ToLower());
+
+                    }
+
+                }
+                else if (neededFood.Length == 1)
+                {
+                    currentHayAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "fourrage-quantity\"> (\\d+)/ <strong class=\"section-fourrage").Groups[1].Value;
+
+                    if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Auto)
+                    {
+                        //currentHayAmount = Helper.GetBetween(currentHtml, "fourrage-quantity\"> ", "/ <strong class=\"section-fourrage");
+                        neededHayAmount = Convert.ToInt16(neededFood[0]) - Convert.ToInt16(currentHayAmount);
+                    }
+                    else if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Manual)
+                    {
+                        neededHayAmount = Convert.ToInt16(bot.Settings.Actions.Food.AmountofHay);
+                    }
+                    else
+                    {
+                        //System.Windows.Forms.MessageBox.Show("Fehler: Futter Param Action = NULL!(HAY)");
+                    }
+
+                    if (neededHayAmount > 0)
+                    {
+                        bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/elevage/chevaux/doEat", (authtokens.Feeding + "=" + csrfToken + "&" + taskTokens.Feeding[0] + "=" + horseId + "&" + taskTokens.Feeding[1] + "=" + coords.X + "&" + taskTokens.Feeding[2] + "=" + coords.Y + "&" + hayToken + "=" + neededHayAmount).ToLower());
+
+                    }
+
+                }
+                else if (neededFood.Length == 0 && Convert.ToInt16(horseAge) < 6 && bot.Settings.Actions.Food.PerformFoodAction)
+                {
+                    if (authtokens.Suckle == string.Empty || taskTokens.Suckle.Length == 0)
+                        return;
+
+                    bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/elevage/chevaux/doSuckle", (authtokens.Suckle + "=" + csrfToken + "&" + taskTokens.Suckle[0] + "=" + horseId).ToLower());
+
+                }
+
+
             });
         }
         private static async Task ChangeHorse(string horseId, HowrseBotModel bot)
@@ -253,7 +512,9 @@ namespace HowrseBotClient
                 string endPoint = Endpoints.GetEndpoint(Endpoint.Horse, bot.Settings);
                 endPoint += $"cheval?id={horseId}";
 
-                bot.OwlientConnection.Get(endPoint);
+                string html = bot.OwlientConnection.Get(endPoint);
+
+                bot.HTMLActions.CurrentHtml = html;
             });
         }
     }
