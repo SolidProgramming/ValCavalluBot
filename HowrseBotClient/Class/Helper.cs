@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using HowrseBotClient.Model;
 
 namespace HowrseBotClient.Class
@@ -24,6 +25,10 @@ namespace HowrseBotClient.Class
             int yClickCoord = rnd.Next(5, 110);
 
             return new ButtonClickCoordinationsModel { X = xClickCoord, Y = yClickCoord };
+        }
+        public static string ToUrlDecoded(this string text)
+        {
+            return HttpUtility.UrlDecode(text);
         }
     }
 }

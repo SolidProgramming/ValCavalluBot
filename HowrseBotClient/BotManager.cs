@@ -513,20 +513,38 @@ namespace HowrseBotClient
         {
             await Task.Run(() =>
             {
-                Console.WriteLine();
+                HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
+                HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
+
+                if (taskTokens.Aging.Length == 0 || authtokens.Aging == string.Empty)
+                {
+                    authtokens = Tokens.GetAuthTokenFromAction(bot.HTMLActions);
+                    taskTokens = Tokens.GetTaskTokenFromAction(bot.HTMLActions);
+                }
+
+                if (taskTokens.Aging.Length == 0 || authtokens.Aging == string.Empty) return;
+
+
             });
         }
         private static async Task PerformRidingCenter(string horseId, HowrseBotModel bot)
         {
             await Task.Run(() =>
             {
+                if (!bot.HTMLActions.CurrentHtml.Contains("elevage/chevaux/centreInscription?id=")) return;
+
+                bot.CurrentAction = BotClientCurrentAction.Einstallen;
                 RidingCenterModel ridingCenter = RidingCenter.GetRidingCenter(horseId, bot);
+                RidingCenter.DoRegistration(horseId, ridingCenter, bot);
+                //TODO: RC Name in action log
             });
         }
         private static async Task ChangeHorse(string horseId, HowrseBotModel bot)
         {
             await Task.Run(() =>
             {
+                bot.HTMLActions.CurrentHtml = string.Empty;
+                bot.HTMLActions.AfterActionHtml = string.Empty;
                 bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
                 string endPoint = Endpoints.GetEndpoint(Endpoint.Horse, bot.Settings);
                 endPoint += $"cheval?id={horseId}";
