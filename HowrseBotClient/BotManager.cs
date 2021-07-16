@@ -248,7 +248,12 @@ namespace HowrseBotClient
 
                 if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
                 {
+                    await PerformRidingCenter(horseId, bot);
+                }
 
+                if (bot.Settings.Actions.Sleep.PerformSleepAction)
+                {
+                    await PerformSleeping(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Age.PerformAgingAction)
@@ -502,6 +507,20 @@ namespace HowrseBotClient
                 }
 
 
+            });
+        }
+        private static async Task PerformSleeping(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                Console.WriteLine();
+            });
+        }
+        private static async Task PerformRidingCenter(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                RidingCenterModel ridingCenter = RidingCenter.GetRidingCenter(horseId, bot);
             });
         }
         private static async Task ChangeHorse(string horseId, HowrseBotModel bot)

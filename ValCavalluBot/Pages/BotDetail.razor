@@ -33,47 +33,156 @@
 <hr />
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Farm/SVG/5996 - Wheat.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Food.PerformFoodAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/hay.svg" class="actionImage mx-auto" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Food.PerformFoodAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Füttern
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Grooming/SVG/Hydrotherapy.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Drink.PerformDrinkAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Grooming/SVG/Hydrotherapy.svg" class="actionImage mx-auto" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Drink.PerformDrinkAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Tränken
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/HorseRacing/SVG/12.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Stroke.PerformStrokeAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/dog-training.svg" class="actionImage mx-auto pt-3 pb-n3" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Stroke.PerformStrokeAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Streicheln
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Grooming/SVG/Pet Brush.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Groom.PerformGroomAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/brush.svg" class="actionImage mx-auto pt-3 pb-n3" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Groom.PerformGroomAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Striegeln
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Farm/SVG/5992 - Vegetables.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Carrot.PerformCarrotAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/carrot.svg" class="actionImage mx-auto pt-3 pb-n3" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Carrot.PerformCarrotAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Karotte
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Energy/SVG/flash.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Mash.PerformMashAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/energy-drink.svg" class="actionImage mx-auto pt-3 pb-n3" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Mash.PerformMashAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Mash
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row mt-3 mb-3">
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Sleep/SVG/CLOUD AND MOON.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Sleep.PerformSleepAction" />
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/sleeping.svg" class="actionImage mx-auto pt-3 pb-n3" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Sleep.PerformSleepAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Schlafen
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
-        <img src="/ICON/Aging/SVG/Lineal Color/Color_20.svg" class="actionImage" />
-        <input class="form-check-input align-bottom" type="checkbox" @bind="@Bot.Settings.Actions.Age.PerformAgingAction" />
-    </div>
-    <div class="col-md d-flex justify-content-center mt-2 mb-2">
-
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/pyramid.svg" class="actionImage mx-auto pt-2 pb-n2" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1" @bind="@Bot.Settings.Actions.Age.PerformAgingAction">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Altern
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <hr />
-<div class="row d-flex justify-content-center mb-2">
+<div class="mb-4 mt-4">
+    <h3>Reitzentrum Einstellungen</h3>
+</div>
+<div class="row ml-2">
+    <div class="row">
+            <div class="col">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1">
+                    <label class="custom-control-label" for="flexCheckDefault1">
+                        Preis
+                    </label>
+                </div>
+                <input type="number" value="20" />
+            </div>
+            <div class="col">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault2">
+                    <label class="custom-control-label" for="flexCheckDefault2">
+                        Kostenloses Heu
+                    </label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault3">
+                    <label class="custom-control-label" for="flexCheckDefault3">
+                        Kostenloser Hafer
+                    </label>
+                </div>
+            </div>
+            <div class="col">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault4">
+                    <label class="custom-control-label" for="flexCheckDefault4">
+                        Gewinn
+                    </label>
+                </div>
+                <input type="number" />
+            </div>
+    </div>
+</div>
+<hr />
+<div class="row d-flex justify-content-center mb-2 mt-4">
     <div class="input-group rounded col-md-3">
         <input type="search" class="form-control rounded" placeholder="Zucht Name" aria-label="Search"
                aria-describedby="search-addon" />
@@ -82,6 +191,7 @@
         </span>
     </div>
 </div>
+<hr />
 <div class="row">
     <div class="col">
         @if (Bot.Settings.Breedings.Count == 0)
@@ -122,14 +232,14 @@
     {
         Bot = BotManagerService.GetBot(Id);
 
-        if (base.ToString().IsFirstRender())
-        {
-            List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
-            if (breedingsFromServer.Count > 0)
-            {
-                Bot.Settings.Breedings = breedingsFromServer;
-            }
-        }
+        //if (base.ToString().IsFirstRender())
+        //{
+        //    List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
+        //    if (breedingsFromServer.Count > 0)
+        //    {
+        //        Bot.Settings.Breedings = breedingsFromServer;
+        //    }
+        //}
 
         PageFirstRenderHandler.PageFirstRender(base.ToString());
     }

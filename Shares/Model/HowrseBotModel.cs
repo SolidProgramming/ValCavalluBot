@@ -18,7 +18,7 @@ namespace Shares.Model
 
         public Connection OwlientConnection = new();
 
-        public BotSettingsModel Settings = new();
+        public BotSettingsModel Settings = new();        
         public HTMLActionsModel HTMLActions = new();
 
         public string Id { get; set; }        

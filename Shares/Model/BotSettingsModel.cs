@@ -13,6 +13,7 @@ namespace Shares.Model
         public HowrseTaskModel Actions = new();
         public List<HowrseBreedingModel> Breedings = new();
         public List<HowrseBreedingModel> ChosenBreedings = new();
+        public RidingCenterSettingsModel RidingCenterSettings = new();
         public string HowrseUserId { get; set; }
         public string Server { get; set; }
         public HowrseAccountType HowrseAccountType { get; set; }
