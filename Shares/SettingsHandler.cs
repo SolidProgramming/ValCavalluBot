@@ -18,7 +18,7 @@ namespace Shares
         private static readonly string BotSettingsFilePath = Path.Combine(SavePathDirectory, "BotSettings");
         private static readonly string BotExitConditionSettingsFilePath = Path.Combine(SavePathDirectory, "BotExitConditionSettings");
 
-        private static Dictionary<FileType, string> FilesPath = new()
+        private static readonly Dictionary<FileType, string> FilesPath = new()
         {
             { FileType.GeneralSettings, GeneralSettingsFilePath },
             { FileType.BotSettings, BotSettingsFilePath },

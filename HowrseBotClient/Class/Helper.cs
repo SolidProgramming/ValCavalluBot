@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using HowrseBotClient.Model;
+using Shares.Model;
 
 namespace HowrseBotClient.Class
 {
@@ -29,6 +30,12 @@ namespace HowrseBotClient.Class
         public static string ToUrlDecoded(this string text)
         {
             return HttpUtility.UrlDecode(text);
+        }
+
+        public static int GetRandomSleepFromSettings(GeneralSettingsModel generalSettings)
+        {
+            Random rnd = new();
+            return rnd.Next(generalSettings.WaitTimeFrom, generalSettings.WaitTimeTo);
         }
     }
 }

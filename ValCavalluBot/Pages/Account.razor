@@ -16,7 +16,26 @@
         <input type="password" class="form-control" @bind="GeneralSettings.GeneralCredentials.Password" />
     </div>
 </div>
-<div class="row mt-3 mb-3">
+<div class="row mt-5 mb-3">
+    <div class="col">
+        <div class="form-group row">
+            <img src="/ICON/Flaticon/SVG/sandclock.svg" style="height:30px;" />
+            <div class="mr-5">
+                <input type="number" min="100" max="1000" step="10" @bind="@GeneralSettings.WaitTimeFrom"/>
+                <label>
+                    Von
+                </label>
+            </div>
+            <div>
+                <input type="number" min="200" max="3000" step="10" @bind="@GeneralSettings.WaitTimeTo"/>
+                <label>
+                    Bis
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-5 mb-3">
     <div class="col">
         <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
     </div>
@@ -26,12 +45,18 @@
 </div>
 
 @code {
-    private GeneralSettingsModel GeneralSettings { get; set; } = new();
+    private GeneralSettingsModel GeneralSettings { get; set; }
 
     //TODO: async
     protected override void OnInitialized()
     {
         GeneralSettings = SettingsService.LoadGeneralSettings();
+
+        if (GeneralSettings is null)
+        {
+            GeneralSettings = new();
+        }
+
     }
 
     private void Cancel()

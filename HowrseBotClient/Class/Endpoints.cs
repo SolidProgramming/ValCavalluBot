@@ -38,6 +38,14 @@ namespace HowrseBotClient.Class
                 "elevage/chevaux/doAge"
             },
             {
+                Endpoint.SleepAction,
+                "elevage/chevaux/doNight"
+            },
+            {
+                Endpoint.MissionAction,
+                "elevage/chevaux/doCentreMission"
+            },
+            {
                 Endpoint.Horse,
                 "elevage/chevaux/"
             }

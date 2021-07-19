@@ -47,7 +47,7 @@
     </div>
     <div class="col-md d-flex justify-content-center mt-2 mb-2">
         <div class="card d-flex justify-content-center" style="width: 100%;">
-            <img src="/ICON/Grooming/SVG/Hydrotherapy.svg" class="actionImage mx-auto" />
+            <img src="/ICON/Flaticon/SVG/drop.svg" class="actionImage mx-auto" />
             <div class="card-body text-center">
                 <div class="custom-control custom-checkbox">
                     <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault2" @bind="@Bot.Settings.Actions.Drink.PerformDrinkAction">
@@ -145,45 +145,98 @@
                 </div>
             </div>
         </div>
+    </div>    
+</div>
+<div class="row mt-3 mb-3">
+    <div class="col-md d-flex justify-content-center mt-2 mb-2">
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/log.svg" class="actionImage mx-auto pt-2 pb-n2" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault10" @bind="@Bot.Settings.Actions.Mission.PerformMissionAction">
+                    <label class="custom-control-label" for="flexCheckDefault10">
+                        Mission
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
+    @*<div class="col-md d-flex justify-content-center mt-2 mb-2">
+        <div class="card d-flex justify-content-center" style="width: 100%;">
+            <img src="/ICON/Flaticon/SVG/log.svg" class="actionImage mx-auto pt-2 pb-n2" />
+            <div class="card-body text-center">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault10" @bind="@Bot.Settings.Actions.Mission.PerformMissionAction">
+                    <label class="custom-control-label" for="flexCheckDefault10">
+                        Ausritt
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>*@
 </div>
 <hr />
 <div class="mb-4 mt-4">
     <h3>Reitzentrum Einstellungen</h3>
 </div>
 <div class="row ml-2">
-    <div class="row">
-            <div class="col">
+    <div class="row w-50">
+        <div class="col">
+            <div>
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault1">
-                    <label class="custom-control-label" for="flexCheckDefault1">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC1" @bind="@PriceFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC1">
                         Preis
                     </label>
                 </div>
-                <input type="number" value="20" />
+                <input type="number" min="20" max="200" step="1" @bind-value="@Bot.Settings.RidingCenterSettings.Price" />
             </div>
+            <div class="mt-2">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC2" @bind="@ProfitFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC2">
+                        Gewinn
+                    </label>
+                </div>
+                <input type="number" min="0" max="60" step="1" @bind-value="@Bot.Settings.RidingCenterSettings.Profit" />
+            </div>
+            <div class="mt-2">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC3" @bind="@DurationFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC3">
+                        Dauer
+                    </label>
+                </div>
+                <input type="number" min="0" max="60" step="1" @bind-value="@Bot.Settings.RidingCenterSettings.Duration" />
+            </div>
+        </div>
             <div class="col">
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault2">
-                    <label class="custom-control-label" for="flexCheckDefault2">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC4" @bind="@HayFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC4">
                         Kostenloses Heu
                     </label>
                 </div>
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault3">
-                    <label class="custom-control-label" for="flexCheckDefault3">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC5" @bind="@OatFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC5">
                         Kostenloser Hafer
                     </label>
-                </div>
+                </div>               
             </div>
             <div class="col">
                 <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefault4">
-                    <label class="custom-control-label" for="flexCheckDefault4">
-                        Gewinn
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC6" @bind="@DrinkFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC6">
+                        Kostenlose Tränke
                     </label>
                 </div>
-                <input type="number" />
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" type="checkbox" value="" id="flexCheckDefaultRC7" @bind="@ShowerFilterEnabled">
+                    <label class="custom-control-label" for="flexCheckDefaultRC7">
+                        Kostenlose Dusche
+                    </label>
+                </div>
             </div>
     </div>
 </div>
@@ -232,20 +285,34 @@
     public string Id { get; set; }
 
     private HowrseBotModel Bot { get; set; }
-
+    private bool PriceFilterEnabled { get; set; }
+    private bool DurationFilterEnabled { get; set; }
+    private bool HayFilterEnabled { get; set; }
+    private bool OatFilterEnabled { get; set; }
+    private bool ProfitFilterEnabled { get; set; }
+    private bool DrinkFilterEnabled { get; set; }
+    private bool ShowerFilterEnabled { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Bot = BotManagerService.GetBot(Id);
 
-        //if (base.ToString().IsFirstRender())
-        //{
-        //    List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
-        //    if (breedingsFromServer.Count > 0)
-        //    {
-        //        Bot.Settings.Breedings = breedingsFromServer;
-        //    }
-        //}
+        PriceFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.PriceFilter);
+        DurationFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.DurationFilter);
+        HayFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.FreeHayFilter);
+        OatFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.FreeOatFilter);
+        ProfitFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.ProfitFilter);
+        DrinkFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.FreeDrinkFilter);
+        ShowerFilterEnabled = Bot.Settings.RidingCenterSettings.Filter.HasFlag(RCFilter.FreeShowerFilter);
+
+        if (base.ToString().IsFirstRender())
+        {
+            List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
+            if (breedingsFromServer.Count > 0)
+            {
+                Bot.Settings.Breedings = breedingsFromServer;
+            }
+        }
 
         PageFirstRenderHandler.PageFirstRender(base.ToString());
     }
@@ -256,6 +323,15 @@
 
         HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
         bot.Settings.ChosenBreedings = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
+
+        bot.Settings.RidingCenterSettings.Filter =
+            (PriceFilterEnabled ? RCFilter.PriceFilter : RCFilter.None) |
+            (DurationFilterEnabled ? RCFilter.DurationFilter : RCFilter.None) |
+            (HayFilterEnabled ? RCFilter.FreeHayFilter : RCFilter.None) |
+            (OatFilterEnabled ? RCFilter.FreeOatFilter : RCFilter.None) |
+            (ProfitFilterEnabled ? RCFilter.ProfitFilter : RCFilter.None) |
+            (DrinkFilterEnabled ? RCFilter.FreeDrinkFilter : RCFilter.None) |
+            (ShowerFilterEnabled ? RCFilter.FreeShowerFilter : RCFilter.None);
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 

@@ -12,13 +12,15 @@ using HowrseBotClient.Model;
 using HowrseBotClient.Enum;
 using HowrseBotClient.Class;
 using GRPCClient;
+using Shares;
+using Shares.Model;
 
 namespace HowrseBotClient
 {
     public static class BotManager
     {
-        private static List<HowrseBotModel> Bots = new List<HowrseBotModel>();
-
+        private static List<HowrseBotModel> Bots = new();
+        private static GeneralSettingsModel GeneralSettings = new();
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -198,8 +200,6 @@ namespace HowrseBotClient
             await Task.Run(async () =>
             {
                 bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
-                //foreach breeding
-                //foreach horse in breeding
 
                 List<string> breedingIds = bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList();
                 HorseCollectorResponseModel response = await GRPCClient.GRPCClient.GetHorsesFromBreedings(breedingIds, bot);
@@ -214,56 +214,89 @@ namespace HowrseBotClient
 
             async Task PerformActions(string horseId, HowrseBotModel bot)
             {
+                GeneralSettings = SettingsHandler.LoadSettings<GeneralSettingsModel>(FileType.GeneralSettings);
+
+                if (GeneralSettings is null)
+                {
+                    GeneralSettings = new();
+                }
+
                 await ChangeHorse(horseId, bot);
 
                 if (bot.Settings.Actions.Drink.PerformDrinkAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformDrinking(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Stroke.PerformStrokeAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformStroking(horseId, bot);
+                }
+
+                if (bot.Settings.Actions.Mission.PerformMissionAction)
+                {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                    await PerformMission(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Food.PerformFoodAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformFeeding(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Groom.PerformGroomAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformGrooming(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Carrot.PerformCarrotAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformGiveCarrot(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Mash.PerformMashAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformGiveMash(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformRidingCenter(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Sleep.PerformSleepAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformSleeping(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Age.PerformAgingAction)
                 {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformAging(horseId, bot);
                 }
-
-
             }
 
+        }        
+        private static async Task PerformMission(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                if (!bot.HTMLActions.CurrentHtml.Contains("module-item\" id=\"mission") || bot.Horse.Age < 24) return;
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.MissionAction, bot.Settings);
+                string postParam = ($"id={horseId}").ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+            });
         }
         private static async Task PerformDrinking(string horseId, HowrseBotModel bot)
         {
@@ -516,14 +549,23 @@ namespace HowrseBotClient
                 HowrseAuthTokenModel authtokens = Tokens.GetHowrseAuthToken(bot.HTMLActions);
                 HowrseTaskTokenModel taskTokens = Tokens.GetHowrseTaskToken(bot.HTMLActions);
 
-                if (taskTokens.Aging.Length == 0 || authtokens.Aging == string.Empty)
+                if (taskTokens.Sleep.Length == 0 || authtokens.Sleep == string.Empty)
                 {
                     authtokens = Tokens.GetAuthTokenFromAction(bot.HTMLActions);
                     taskTokens = Tokens.GetTaskTokenFromAction(bot.HTMLActions);
                 }
 
-                if (taskTokens.Aging.Length == 0 || authtokens.Aging == string.Empty) return;
+                if (taskTokens.Sleep.Length == 0 || authtokens.Sleep == string.Empty) return;
 
+                bot.CurrentAction = BotClientCurrentAction.Schlafen;
+                ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsTakingCareButton();
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.SleepAction, bot.Settings);
+                string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
+
+                string postParam = (authtokens.Sleep + "=" + csrfToken + "&" + taskTokens.Sleep[0] + "=" + horseId + "&" + taskTokens.Sleep[1] + "=" + coords.X + "&" + taskTokens.Sleep[2] + "=" + coords.Y).ToLower();
+
+                bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
 
             });
         }
@@ -541,7 +583,7 @@ namespace HowrseBotClient
         }
         private static async Task ChangeHorse(string horseId, HowrseBotModel bot)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 bot.HTMLActions.CurrentHtml = string.Empty;
                 bot.HTMLActions.AfterActionHtml = string.Empty;
@@ -549,10 +591,24 @@ namespace HowrseBotClient
                 string endPoint = Endpoints.GetEndpoint(Endpoint.Horse, bot.Settings);
                 endPoint += $"cheval?id={horseId}";
 
-                string html = bot.OwlientConnection.Get(endPoint);
+                bot.HTMLActions.CurrentHtml = bot.OwlientConnection.Get(endPoint);
 
-                bot.HTMLActions.CurrentHtml = html;
+                await ScrapeHorseInfos(bot);
             });
+        }
+        private static async Task ScrapeHorseInfos(HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                int age = GetHorseAge(bot);
+                bot.Horse.Age = age;
+            });
+        }
+        private static int GetHorseAge(HowrseBotModel bot)
+        {
+            string age = Regex.Match(bot.HTMLActions.CurrentHtml, "chevalAge = (\\d+);").Groups[1].Value;
+
+            return Convert.ToInt32(age);
         }
     }
 }

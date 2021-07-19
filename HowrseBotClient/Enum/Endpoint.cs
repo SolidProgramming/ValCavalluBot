@@ -14,6 +14,8 @@ namespace HowrseBotClient.Enum
         CarrotAction,
         MashAction,
         AgingAction,
+        SleepAction,
+        MissionAction,
         Login,
         Main,
         Ranking,
