@@ -208,10 +208,9 @@ namespace HowrseBotClient
                     await PerformActions(horseId, bot);
                 }
 
-
             });
 
-            async Task PerformActions(string horseId, HowrseBotModel bot)
+            static async Task PerformActions(string horseId, HowrseBotModel bot)
             {
                 GeneralSettings = SettingsHandler.LoadSettings<GeneralSettingsModel>(FileType.GeneralSettings);
 
@@ -232,6 +231,12 @@ namespace HowrseBotClient
                 {
                     await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformStroking(horseId, bot);
+                }
+
+                if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
+                {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                    await PerformRidingCenter(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Mission.PerformMissionAction)
@@ -262,12 +267,6 @@ namespace HowrseBotClient
                 {
                     await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformGiveMash(horseId, bot);
-                }
-
-                if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
-                {
-                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-                    await PerformRidingCenter(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Sleep.PerformSleepAction)
