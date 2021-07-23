@@ -51,13 +51,16 @@
 
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
-        SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
-
         TestingInProgress = false;
 
         if (LoginTestSucceeded)
         {
+            SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
             NavigationManager.NavigateTo("/dashboard");
+        }
+        else
+        {
+            BotManagerService.DeleteBot(bot.Id);
         }
     }
 

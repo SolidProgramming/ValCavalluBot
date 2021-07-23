@@ -291,7 +291,7 @@ namespace HowrseBotClient
                 if (!bot.HTMLActions.CurrentHtml.Contains("module-item\" id=\"mission") || bot.Horse.Age < 24) return;
 
                 string endPoint = Endpoints.GetEndpoint(Endpoint.MissionAction, bot.Settings);
-                string postParam = ($"id={horseId}").ToLower();
+                string postParam = $"id={horseId}".ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
 
@@ -463,7 +463,7 @@ namespace HowrseBotClient
 
                 ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsFeedingButton();
 
-                string hayToken = Regex.Match(bot.HTMLActions.CurrentHtml, "type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;//Helper.GetBetween(html, "type=\"hidden\" name=\"feeding", "\" value=\"");
+                string hayToken = Regex.Match(bot.HTMLActions.CurrentHtml, "type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;
                 string oatToken = Regex.Match(bot.HTMLActions.CurrentHtml, "oatsSlider-sliderHidden\" type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;//Helper.GetBetween(html, "oatsSlider-sliderHidden\" type=\"hidden\" name=\"feeding", "\" value=\"");
 
                 string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);

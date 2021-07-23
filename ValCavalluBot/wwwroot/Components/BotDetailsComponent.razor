@@ -5,6 +5,7 @@
 @inject IBotManagerService BotManagerService;
 @inject IGRPCService GRPCService;
 
+
 <tr>
     <td><a href="@string.Format("/bots/{0}", Bot.Id)">@Bot.Settings.Credentials.HowrseUsername</a></td>
     <td>@Bot.Id</td>
@@ -54,11 +55,15 @@
     [Parameter]
     public HowrseBotModel Bot { get; set; }
 
+    [Parameter]
+    public EventCallback<string> OnBotDeletedEvent { get; set; }
+
     private bool Collapsed = true;
 
-    private void Delete()
+    private async void Delete()
     {
-
+        BotManagerService.DeleteBot(Bot.Id);
+        await OnBotDeletedEvent.InvokeAsync(Bot.Id);
     }
 
     private async Task StartBot()

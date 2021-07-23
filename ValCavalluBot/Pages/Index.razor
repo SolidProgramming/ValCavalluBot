@@ -30,7 +30,7 @@
         <tbody>
             @foreach (HowrseBotModel bot in Bots)
             {
-                <BotDetailsComponent Bot="bot"></BotDetailsComponent>
+                <BotDetailsComponent Bot="bot" OnBotDeletedEvent="OnBotDeletedEvent"></BotDetailsComponent>
             }
         </tbody>
     </table>
@@ -41,6 +41,7 @@
     {
         NavigationManager.NavigateTo("/newbot");
     }
+
     private List<HowrseBotModel> Bots { get; set; }
 
     protected override void OnInitialized()
@@ -53,5 +54,9 @@
         }
     }
 
+    private void OnBotDeletedEvent(string botId)
+    {
+        Bots.RemoveAll(_ => _.Id == botId);
+    }
 
 }
