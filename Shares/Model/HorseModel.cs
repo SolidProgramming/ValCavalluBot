@@ -9,21 +9,21 @@ namespace Shares.Model
 {
     public class HorseModel
     {
-        public string Id;
-        public string Name;
-        public int Age;
-        public int Size;
-        public int Weight;
-        public HorseRace HorseRace;
-        public HorseSex HorseSex;
-        public HorseFur HorseFur;
-        public string BreedingId;
-        public DateTime DateOfBirth;
-        public HorseStatsModel<decimal> Stats;
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int Size { get; set; }
+        public int Weight { get; set; }
+        public HorseRace HorseRace { get; set; }
+        public HorseSex HorseSex { get; set; }
+        public HorseFur HorseFur { get; set; }
+        public string BreedingId { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public HorseStatsModel<decimal> Stats { get; set; }
         //TODO: Accessoriess & UserObjects in Zubbel Bot V2 mit Interface
         //public List<AccessorieModel> Accessories = new List<AccessorieModel>(); 
         //public List<UserObjectModel> Objects = new List<UserObjectModel>();
         public List<SkillProgressModel<decimal>> SkillProgress = new();
-        public bool ExitConditionMet = false;
+        public HorseStatus Status { get; set; } = HorseStatus.Normal;
     }
 }
