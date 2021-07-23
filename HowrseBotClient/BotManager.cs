@@ -507,7 +507,7 @@ namespace HowrseBotClient
                 }
                 else if (neededFood.Length == 1)
                 {
-                    currentHayAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "fourrage-quantity\"> (\\d+)/ <strong class=\"section-fourrage").Groups[1].Value;
+                    currentHayAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "fourrage-quantity\"> (\\d+) / <strong class=\"section-fourrage").Groups[1].Value;
 
                     if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Auto)
                     {
