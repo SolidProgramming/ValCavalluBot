@@ -1,15 +1,11 @@
 ﻿#addBotBtn {
-    width: 110px;
+    width: 90px;
     height: 40px;
     font-size: 14pt;
 }
 
-#addBotIco {
-    margin-right: 5px;
-    width: 28px;
-    height: 28px;
+#addBotIcon {
     float: left;
-    fill: white;
-    color: white;
-    background: url('/ICON/TradeAndDashboard/SVG/Trade_Icons-03.svg');
+    margin-top: 3px;
 }
+

@@ -8,8 +8,7 @@ namespace ValCavalluBot.Classes
     public static class PageFirstRenderHandler
     {
         private static List<string> _firstRenderPages = new();
-        private static string _moduleName;
-         
+                 
         public static bool IsFirstRender(this string pageName)
         {
             if (_firstRenderPages.Contains(pageName))

@@ -12,8 +12,7 @@ using HowrseBotClient.Model;
 using HowrseBotClient.Enum;
 using HowrseBotClient.Class;
 using GRPCClient;
-using Shares;
-using Shares.Model;
+using HtmlAgilityPack;
 
 namespace HowrseBotClient
 {
@@ -209,10 +208,9 @@ namespace HowrseBotClient
                     await PerformActions(horseId, bot);
                 }
 
-
             });
 
-            async Task PerformActions(string horseId, HowrseBotModel bot)
+            static async Task PerformActions(string horseId, HowrseBotModel bot)
             {
                 GeneralSettings = SettingsHandler.LoadSettings<GeneralSettingsModel>(FileType.GeneralSettings);
 
@@ -233,6 +231,12 @@ namespace HowrseBotClient
                 {
                     await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                     await PerformStroking(horseId, bot);
+                }
+
+                if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
+                {
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                    await PerformRidingCenter(horseId, bot);
                 }
 
                 if (bot.Settings.Actions.Mission.PerformMissionAction)
@@ -265,12 +269,6 @@ namespace HowrseBotClient
                     await PerformGiveMash(horseId, bot);
                 }
 
-                if (bot.Settings.Actions.Sleep.PerformRCRegistrationAction)
-                {
-                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-                    await PerformRidingCenter(horseId, bot);
-                }
-
                 if (bot.Settings.Actions.Sleep.PerformSleepAction)
                 {
                     await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
@@ -292,7 +290,7 @@ namespace HowrseBotClient
                 if (!bot.HTMLActions.CurrentHtml.Contains("module-item\" id=\"mission") || bot.Horse.Age < 24) return;
 
                 string endPoint = Endpoints.GetEndpoint(Endpoint.MissionAction, bot.Settings);
-                string postParam = ($"id={horseId}").ToLower();
+                string postParam = $"id={horseId}".ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
 
@@ -441,6 +439,19 @@ namespace HowrseBotClient
                 neededFood = Regex.Matches(bot.HTMLActions.CurrentHtml, "-target\">(\\d+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
                 neededFood2 = Regex.Matches(bot.HTMLActions.AfterActionHtml, "-target\\\\\">(\\d+)").Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
 
+                switch (bot.Horse.Status)
+                {
+                    case HorseStatus.Fat:
+                        neededFood[0] = "0";
+                        break;
+                    case HorseStatus.Skinny:
+                        neededFood[0] = "20";
+                        break;
+                    default:
+                        break;
+                }
+
+
                 if (neededFood2.Length > 1)
                 {
                     if (Convert.ToInt32(neededFood[0]) < Convert.ToInt32(neededFood2[0]) || Convert.ToInt32(neededFood[1]) < Convert.ToInt32(neededFood2[1]))
@@ -451,7 +462,7 @@ namespace HowrseBotClient
 
                 ButtonClickCoordinationsModel coords = Helper.GetRandomClickCoordsFeedingButton();
 
-                string hayToken = Regex.Match(bot.HTMLActions.CurrentHtml, "type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;//Helper.GetBetween(html, "type=\"hidden\" name=\"feeding", "\" value=\"");
+                string hayToken = Regex.Match(bot.HTMLActions.CurrentHtml, "type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;
                 string oatToken = Regex.Match(bot.HTMLActions.CurrentHtml, "oatsSlider-sliderHidden\" type=\"hidden\" name=\"feeding(.*?)\" value=").Groups[1].Value;//Helper.GetBetween(html, "oatsSlider-sliderHidden\" type=\"hidden\" name=\"feeding", "\" value=\"");
 
                 string csrfToken = Tokens.GetCsrfToken(bot.HTMLActions);
@@ -482,10 +493,6 @@ namespace HowrseBotClient
                         currentOatsAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "avoine-quantity\"> (\\d+) / <strong class=\"section-avoine section-avoine").Groups[1].Value;
                         neededOatsAmount -= Convert.ToInt16(currentOatsAmount);
                     }
-                    else
-                    {
-                        // System.Windows.Forms.MessageBox.Show("Fehler: Futter Param Action Mode = NULL!(HAY&OAT)");
-                    }
 
 
                     if (neededHayAmount > 0 && neededOatsAmount > 0)
@@ -511,16 +518,12 @@ namespace HowrseBotClient
 
                     if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Auto)
                     {
-                        //currentHayAmount = Helper.GetBetween(currentHtml, "fourrage-quantity\"> ", "/ <strong class=\"section-fourrage");
+                        //currentHayAmount = Regex.Match(bot.HTMLActions.CurrentHtml, "fourrage-quantity\"> (\\d+) / <strong class=\"section-fourrage").Groups[1].Value;
                         neededHayAmount = Convert.ToInt16(neededFood[0]) - Convert.ToInt16(currentHayAmount);
                     }
                     else if (bot.Settings.Actions.Food.ActionMode == HowrseActionMode.Manual)
                     {
                         neededHayAmount = Convert.ToInt16(bot.Settings.Actions.Food.AmountofHay);
-                    }
-                    else
-                    {
-                        //System.Windows.Forms.MessageBox.Show("Fehler: Futter Param Action = NULL!(HAY)");
                     }
 
                     if (neededHayAmount > 0)
@@ -602,6 +605,8 @@ namespace HowrseBotClient
             {
                 int age = GetHorseAge(bot);
                 bot.Horse.Age = age;
+
+                bot.Horse.Status = GetHorseStatus(bot);
             });
         }
         private static int GetHorseAge(HowrseBotModel bot)
@@ -609,6 +614,22 @@ namespace HowrseBotClient
             string age = Regex.Match(bot.HTMLActions.CurrentHtml, "chevalAge = (\\d+);").Groups[1].Value;
 
             return Convert.ToInt32(age);
+        }       
+        private static HorseStatus GetHorseStatus(HowrseBotModel bot)
+        {
+            HtmlDocument doc = new();
+            doc.LoadHtml(bot.HTMLActions.CurrentHtml);
+
+            HtmlNode div = doc.DocumentNode.SelectSingleNode("//*[@id=\"care-tab-feed\"]//*[@id=\"messageBoxInline\"]/div/div/span/span[2]");
+
+            if (div is null) return HorseStatus.Normal;
+
+            if (div.InnerText.Contains("20"))
+            {
+                return HorseStatus.Skinny;
+            }
+
+            return HorseStatus.Fat;
         }
     }
 }
