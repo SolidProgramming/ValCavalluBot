@@ -66,7 +66,7 @@
         if (LoginTestSucceeded)
         {
             SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
-            NavigationManager.NavigateTo("/dashboard");
+            NavigationManager.NavigateTo("/aplern");
         }
         else
         {
@@ -76,7 +76,7 @@
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/dashboard");
+        NavigationManager.NavigateTo("/aplern");
     }
 
     private async Task Focus(string elementId)

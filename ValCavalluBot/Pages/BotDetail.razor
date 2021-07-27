@@ -335,12 +335,12 @@
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 
-        NavigationManager.NavigateTo("/dashboard");
+        NavigationManager.NavigateTo("/aplern");
     }
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/dashboard");
+        NavigationManager.NavigateTo("/aplern");
     }
 
 }
