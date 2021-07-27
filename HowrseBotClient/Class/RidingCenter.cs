@@ -23,7 +23,7 @@ namespace HowrseBotClient.Class
 
         public static RidingCenterModel GetRidingCenter(string horseId, HowrseBotModel bot)
         {
-            bool TryGetHash(string _html, string _horseId, string _rcId, int _duration, out string _hash)
+            static bool TryGetHash(string _html, string _horseId, string _rcId, int _duration, out string _hash)
             {
                 if (_html.Contains("id=" + _horseId + "&centre=" + _rcId + "&duree=" + _duration + "&elevage="))
                 {

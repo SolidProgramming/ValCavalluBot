@@ -23,7 +23,7 @@ namespace HowrseBotClient
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
-            HowrseBotModel bot = new HowrseBotModel()
+            HowrseBotModel bot = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 Settings = botSettings
@@ -282,7 +282,7 @@ namespace HowrseBotClient
                 }
             }
 
-        }        
+        }
         private static async Task PerformMission(string horseId, HowrseBotModel bot)
         {
             await Task.Run(() =>
@@ -601,35 +601,41 @@ namespace HowrseBotClient
         }
         private static async Task ScrapeHorseInfos(HowrseBotModel bot)
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
-                int age = GetHorseAge(bot);
+                int age = await GetHorseAge(bot);
                 bot.Horse.Age = age;
 
-                bot.Horse.Status = GetHorseStatus(bot);
+                bot.Horse.Status = await GetHorseStatus(bot);
             });
         }
-        private static int GetHorseAge(HowrseBotModel bot)
+        private static async Task<int> GetHorseAge(HowrseBotModel bot)
         {
-            string age = Regex.Match(bot.HTMLActions.CurrentHtml, "chevalAge = (\\d+);").Groups[1].Value;
-
-            return Convert.ToInt32(age);
-        }       
-        private static HorseStatus GetHorseStatus(HowrseBotModel bot)
-        {
-            HtmlDocument doc = new();
-            doc.LoadHtml(bot.HTMLActions.CurrentHtml);
-
-            HtmlNode div = doc.DocumentNode.SelectSingleNode("//*[@id=\"care-tab-feed\"]//*[@id=\"messageBoxInline\"]/div/div/span/span[2]");
-
-            if (div is null) return HorseStatus.Normal;
-
-            if (div.InnerText.Contains("20"))
+            return await Task.Run(() =>
             {
-                return HorseStatus.Skinny;
-            }
+                string age = Regex.Match(bot.HTMLActions.CurrentHtml, "chevalAge = (\\d+);").Groups[1].Value;
 
-            return HorseStatus.Fat;
+                return Convert.ToInt32(age);
+            });            
+        }
+        private static async Task<HorseStatus> GetHorseStatus(HowrseBotModel bot)
+        {
+            return await Task.Run(() =>
+            {
+                HtmlDocument doc = new();
+                doc.LoadHtml(bot.HTMLActions.CurrentHtml);
+
+                HtmlNode div = doc.DocumentNode.SelectSingleNode("//*[@id=\"care-tab-feed\"]//*[@id=\"messageBoxInline\"]/div/div/span/span[2]");
+
+                if (div is null) return HorseStatus.Normal;
+
+                if (div.InnerText.Contains("20"))
+                {
+                    return HorseStatus.Skinny;
+                }
+
+                return HorseStatus.Fat;
+            });
         }
     }
 }
