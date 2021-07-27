@@ -1,0 +1,43 @@
+﻿@page "/breeding";
+@using System.Threading;
+@using Services;
+@using Shares.Model;
+@inject IGRPCService GRPCService;
+@inject IBotManagerService BotManagerService;
+
+<h3>Züchten</h3>
+
+<div class="row">
+    <div class="col">
+        <button class="btn btn-primary" @onclick="StartBreeding">Start</button>
+        <button class="btn btn-danger" @onclick="StopBreeding">Stop</button>
+    </div>
+</div>
+
+
+@code {
+    private List<HorseModel> foundHorses;
+    private CancellationTokenSource cts = new();
+
+
+    private void StartBreeding()
+    {
+        foundHorses = new();
+
+        GRPCClient.GRPCClient.OnGRPCFilterFoundHorse += OnGRPCFilterFoundHorse;
+
+        GRPCService.GetFilteredHorses(new(), new(), new());
+        BotManagerService.StartBreeding(cts.Token);
+    }
+
+    private void StopBreeding()
+    {
+        cts.Cancel();
+    }
+
+    private void OnGRPCFilterFoundHorse(Shares.Model.HorseModel horse)
+    {
+        foundHorses.Add(horse);
+    }
+
+}

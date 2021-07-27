@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Shares;
 using Shares.Model;
 using HowrseBotClient;
+using System.Threading;
 
 namespace ValCavalluBot.Services
 {
@@ -37,6 +38,11 @@ namespace ValCavalluBot.Services
         public async Task<bool> TestLogin(HowrseBotModel bot)
         {
             return await BotManager.LoginTest(bot);
+        }
+        public async Task StartBreeding(CancellationToken ct)
+        {
+            await BotManager.StartBreeding(new(), new(), ct);
+            throw new NotImplementedException();
         }
     }
 }

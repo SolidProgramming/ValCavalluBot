@@ -13,6 +13,8 @@ using HowrseBotClient.Enum;
 using HowrseBotClient.Class;
 using GRPCClient;
 using HtmlAgilityPack;
+using System.Threading;
+using System.Collections.Concurrent;
 
 namespace HowrseBotClient
 {
@@ -601,7 +603,7 @@ namespace HowrseBotClient
         }
         private static async Task ScrapeHorseInfos(HowrseBotModel bot)
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 int age = await GetHorseAge(bot);
                 bot.Horse.Age = age;
@@ -615,8 +617,13 @@ namespace HowrseBotClient
             {
                 string age = Regex.Match(bot.HTMLActions.CurrentHtml, "chevalAge = (\\d+);").Groups[1].Value;
 
+                if (string.IsNullOrEmpty(age))
+                {
+                    return -1;
+                }
+
                 return Convert.ToInt32(age);
-            });            
+            });
         }
         private static async Task<HorseStatus> GetHorseStatus(HowrseBotModel bot)
         {
@@ -635,6 +642,27 @@ namespace HowrseBotClient
                 }
 
                 return HorseStatus.Fat;
+            });
+        }
+        public static async Task StartBreeding(ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females, CancellationToken ct)
+        {
+            await Task.Run(async () =>
+            {
+                while (!ct.IsCancellationRequested)
+                {
+                    if (males.TryTake(out HorseModel male) && females.TryTake(out HorseModel female))
+                    {
+                        await OfferAndAcceptReproduction(male, female);
+                    }
+                }
+            }, CancellationToken.None);
+        }
+        private static async Task OfferAndAcceptReproduction(HorseModel male, HorseModel female)
+        {
+            await Task.Run(() =>
+            {
+                //TODO
+                throw new NotImplementedException();
             });
         }
     }

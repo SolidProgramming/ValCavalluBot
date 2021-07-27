@@ -8,7 +8,7 @@ namespace Shares.Enum
 {
     public enum HorseSex
     {
-        Male,
-        Female
+        Male = 0,
+        Female = 1
     }
 }

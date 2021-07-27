@@ -31,11 +31,11 @@ namespace HowrseBotClient.Class
         {
             return HttpUtility.UrlDecode(text);
         }
-
         public static int GetRandomSleepFromSettings(GeneralSettingsModel generalSettings)
         {
             Random rnd = new();
             return rnd.Next(generalSettings.WaitTimeFrom, generalSettings.WaitTimeTo);
         }
+       
     }
 }

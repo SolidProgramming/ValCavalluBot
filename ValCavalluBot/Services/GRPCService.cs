@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GRPCClient;
 using Shares.Model;
@@ -8,7 +8,7 @@ using Shares.Model;
 namespace ValCavalluBot.Services
 {
     public class GRPCService : IGRPCService
-    {
+    {       
         public async Task<List<HowrseBreedingModel>> GetBreedings(HowrseBotModel bot)
         {
             List<HowrseBreedingModel> breedings = new();
@@ -25,14 +25,17 @@ namespace ValCavalluBot.Services
             }
 
             return breedings;
-        }
-
+        }  
         public async Task<List<string>> GetHorsesFromBreedings(List<string> breedingIds, HowrseBotModel bot)
         {
             List<string> horseIds = new();
             HorseCollectorResponseModel horsesResponse = await GRPCClient.GRPCClient.GetHorsesFromBreedings(breedingIds, bot);
 
             return horsesResponse.HorseIds.ToList();
+        }
+        public async Task GetFilteredHorses(List<string> breedingIds, HowrseBotModel bot, CancellationTokenSource cts)
+        {           
+            await GRPCClient.GRPCClient.GetFilteredHorses(breedingIds, bot, cts);
         }
     }
 }
