@@ -1,0 +1,80 @@
+﻿@using Shares
+@using Shares.Model;
+@using Services;
+@using Shares.Enum;
+@using System.Threading;
+@inject IBotManagerService BotManagerService;
+@inject IGRPCService GRPCService;
+
+
+<tr>
+    <td><a href="@string.Format("/bots/{0}", Bot.Id)">@Bot.Settings.Credentials.HowrseUsername</a></td>
+    <td>@Bot.Id</td>
+    <td class="text-capitalize text-info">@Bot.CurrentAction.ToString()</td>
+    <td>
+        @switch (Bot.Status)
+        {
+            case Shares.Enum.BotClientStatus.Stopped:
+                <button class="btn btn-success" type="button" @onclick="@StartBreeding">
+                    <span role="status" aria-hidden="true">
+                        Start
+                    </span>
+                </button>
+                break;
+            case Shares.Enum.BotClientStatus.Started:
+                <button class="btn btn-primary" type="button" @onclick="@StopBreeding">
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
+                    </span>
+                    Stoppen
+                </button>
+                break;
+            default:
+                break;
+        }
+    </td>
+    <td>
+        <input type="button" class="btn btn-danger" @onclick="@Delete" value="Löschen" />
+    </td>
+</tr>
+
+
+
+@code {
+    [Parameter]
+    public HowrseBotModel Bot { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnBotDeletedEvent { get; set; }
+
+    private List<HorseModel> foundHorses;
+    private CancellationTokenSource cts = new();
+
+    private async Task Delete()
+    {
+        BotManagerService.DeleteBot(Bot.Id);
+        await OnBotDeletedEvent.InvokeAsync(Bot.Id);
+    }
+
+
+    private async Task StartBreeding()
+    {
+        foundHorses = new();
+
+        GRPCClient.GRPCClient.OnGRPCFilterFoundHorse += OnGRPCFilterFoundHorse;
+
+        await GRPCService.GetFilteredHorses(Bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), Bot, cts);
+        await BotManagerService.StartBreeding(cts.Token);
+    }
+
+    private void StopBreeding()
+    {
+        cts.Cancel();
+    }
+
+    private void OnGRPCFilterFoundHorse(HorseModel horse)
+    {
+
+    }
+
+
+}
