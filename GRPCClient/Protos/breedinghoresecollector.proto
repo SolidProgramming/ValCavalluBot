@@ -44,17 +44,7 @@ message FilterHorsesRequestModel
 
 message FilterHorsesResponseModel
 {
-   string Id = 1;
-   int32 Age = 2;
-   bool AbleToBreed = 3;
-   bool InRidingCenter = 4;
-   bool IsPregnant = 5;
-   HorseSex Sex = 6;
-   string Name = 7;
-   float Energy = 8;
-   float Health = 9;
-   float Moral = 10;
-
+   string HorseId = 1;
 }
 
 enum HorseSex

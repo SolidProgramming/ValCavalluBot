@@ -13,7 +13,8 @@ namespace GRPCClient
     public static class GRPCClient
     {
         private const string GRPCAdress = "http://ddns.lucaweidmann.de:8081";
-        public static event Action<HorseModel> OnGRPCFilterFoundHorse;
+        public static event Action<string> OnGRPCFilterFoundHorse;
+        public static event Action OnGRPCFilterFinished;
 
         public static async Task<BreedingCollectorResponseModel> GetBreedings(HowrseBotModel bot)
         {
@@ -59,32 +60,35 @@ namespace GRPCClient
 
             request.BreedingIds.AddRange(breedingIds);
 
-            using var call = client.GetFilteredHorsesFromBreedings(request);
+            using var call = client.GetFilteredHorsesFromBreedings(request, cancellationToken: ct);
 
             while (await call.ResponseStream.MoveNext(ct))
             {
-                HorseModel horse = ConvertToHorse(call.ResponseStream.Current);
-
-                OnGRPCFilterFoundHorse(horse);
+                Console.WriteLine(call.ResponseStream.Current.HorseId);
+                OnGRPCFilterFoundHorse(call.ResponseStream.Current.HorseId);
             }
 
-            static HorseModel ConvertToHorse(FilterHorsesResponseModel horsedata)
-            {
-                HorseModel horse = new()
-                {
-                    Id = horsedata.Id,
-                    Age = horsedata.Age,
-                    AbleToBreed = horsedata.AbleToBreed,
-                    InRidingCenter = horsedata.InRidingCenter,
-                    IsPregnant = horsedata.IsPregnant,
-                    HorseSex = (Shares.Enum.HorseSex)horsedata.Sex,
-                    Name = horsedata.Name
-                };
+            OnGRPCFilterFinished();
 
-                horse.Stats.Energy = Convert.ToDecimal(horsedata.Energy);
+            #region crap
+            //static HorseModel ConvertToHorse(FilterHorsesResponseModel horsedata)
+            //{
+            //    HorseModel horse = new()
+            //    {
+            //        Id = horsedata.Id,
+            //        Age = horsedata.Age,
+            //        AbleToBreed = horsedata.AbleToBreed,
+            //        InRidingCenter = horsedata.InRidingCenter,
+            //        IsPregnant = horsedata.IsPregnant,
+            //        HorseSex = (Shares.Enum.HorseSex)horsedata.Sex,
+            //        Name = horsedata.Name
+            //    };
 
-                return horse;
-            }
+            //    horse.Stats.Energy = Convert.ToDecimal(horsedata.Energy);
+
+            //    return horse;
+            //}
+            #endregion
 
         }
 

@@ -13,9 +13,8 @@ namespace ValCavalluBot.Services
 {
     public class BotManagerService : IBotManagerService
     {
-        private ConcurrentBag<HorseModel> males;
-        private ConcurrentBag<HorseModel> females;
-
+        private ConcurrentBag<string> horseIds;
+        private bool finished;
 
         public HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -47,28 +46,26 @@ namespace ValCavalluBot.Services
         }
         public async Task StartBreeding(HowrseBotModel bot, CancellationTokenSource cts)
         {
-            males = new();
-            females = new();
+            finished = false;
 
             GRPCClient.GRPCClient.OnGRPCFilterFoundHorse += OnGRPCFilterFoundHorse;
+            GRPCClient.GRPCClient.OnGRPCFilterFinished += GRPCClient_OnGRPCFilterFinished;
+
+            horseIds = new();
 
             await GRPCClient.GRPCClient.GetFilteredHorses(bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), bot, cts.Token);
-            
-            await BotManager.StartBreeding(bot, males, females, cts.Token);
+
+            await BotManager.StartBreeding(bot, horseIds, finished, cts.Token);
         }
-        private void OnGRPCFilterFoundHorse(HorseModel horse)
-        {           
-            switch (horse.HorseSex)
-            {
-                case HorseSex.Male:
-                    males.Add(horse);
-                    break;
-                case HorseSex.Female:
-                    females.Add(horse);
-                    break;
-                default:
-                    break;
-            }
+
+        private void GRPCClient_OnGRPCFilterFinished()
+        {
+            finished = true;
+        }
+
+        private void OnGRPCFilterFoundHorse(string horseId)
+        {
+            horseIds.Add(horseId);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace HowrseBotClient
     {
         private static List<HowrseBotModel> Bots = new();
         private static GeneralSettingsModel GeneralSettings = new();
+        private static bool GRPCFilterFinished;
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -60,7 +61,7 @@ namespace HowrseBotClient
 
             bot.Status = BotClientStatus.Stopped;
             bot.CurrentAction = BotClientCurrentAction.Keine;
-        }        
+        }
         public static List<HowrseBotModel> GetBots()
         {
             if (Bots.Count == 0)
@@ -639,28 +640,57 @@ namespace HowrseBotClient
                 return HorseStatus.Fat;
             });
         }
-        public static async Task StartBreeding(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females, CancellationToken ct)
-        {            
+        //TODO: refactor this shit
+        public static async Task StartBreeding(HowrseBotModel bot, ConcurrentBag<string> horseIds, bool finished, CancellationToken ct)
+        {
             await Task.Run(async () =>
             {
+                if (!await Login(bot)) return;
+
+                ConcurrentBag<HorseModel> males = new();
+                ConcurrentBag<HorseModel> females = new();
+
+                GRPCFilterFinished = false;                
+
                 bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
 
-                while (!ct.IsCancellationRequested)
+                while (!ct.IsCancellationRequested || (finished && !horseIds.IsEmpty))
                 {
-                    if (males.TryTake(out HorseModel male) && females.TryTake(out HorseModel female))
+                    if (horseIds.TryTake(out string horseId))
                     {
-                        await OfferAndAcceptReproduction(bot, male, female);
+                        HorseModel horse = await GetHorseData(bot, horseId);
+
+                        switch (horse.HorseSex)
+                        {
+                            case Shares.Enum.HorseSex.Male:
+                                males.Add(horse);
+                                break;
+                            case Shares.Enum.HorseSex.Female:
+                                females.Add(horse);
+                                break;
+                            default:
+                                break;
+                        }
+
                     }
-                    await Task.Delay(50);
+                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
                 }
+
+                await Breed(bot, males, females);
 
                 bot.CurrentAction = BotClientCurrentAction.Keine;
 
             }, CancellationToken.None);
+
+        }
+
+        private static void GRPCClient_OnGRPCFilterFinished()
+        {
+            GRPCFilterFinished = true;
         }
         private static async Task OfferAndAcceptReproduction(HowrseBotModel bot, HorseModel male, HorseModel female)
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 bool success = await Login(bot);
 
@@ -676,7 +706,7 @@ namespace HowrseBotClient
 
                 string horseFemaleHorseName = Regex.Match(html, "<a href=\"/elevage/chevaux/cheval\\?id=\\d+\">(.*?)</a>").Groups[1].Value;
 
-                await Task .Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
 
                 bot.CurrentAction = BotClientCurrentAction.DecksprungAnbieten;
 
@@ -684,7 +714,7 @@ namespace HowrseBotClient
 
                 bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/saillie?offre=" + offerId + "&amp;jument=" + female.Id, "offre=" + offerId + "&amp;jument=" + female.Id);
 
-                await Task .Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
 
                 bot.CurrentAction = BotClientCurrentAction.DecksprungAnnehmen;
 
@@ -692,6 +722,65 @@ namespace HowrseBotClient
 
                 await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
 
+            });
+        }
+        private static async Task<HorseModel> GetHorseData(HowrseBotModel bot, string horseId)
+        {
+            return await Task.Run(async () =>
+            {
+                await ChangeHorse(horseId, bot);
+
+                if (string.IsNullOrEmpty(bot.HTMLActions.CurrentHtml)) return null;
+
+                HtmlDocument doc = new();
+                doc.LoadHtml(bot.HTMLActions.CurrentHtml);
+
+                HorseModel horse = new();
+
+                string age = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalAge = (\\d+);").Groups[1].Value;
+                string health = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalSante = (\\d+|\\d+\\.\\d+);").Groups[1].Value.Replace('.', ',');
+                string energy = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalEnergie = (\\d+|\\d+\\.\\d+);").Groups[1].Value.Replace('.', ',');
+                string moral = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalMoral = (\\d+|\\d+\\.\\d+);").Groups[1].Value.Replace('.', ',');
+                string sex = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalSexe = '(.*?)';").Groups[1].Value;
+                string name = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalNom = '<b>(.*?)</b>';").Groups[1].Value;
+
+                if (sex == "masculin")
+                {
+                    horse.HorseSex = Shares.Enum.HorseSex.Male;
+                }
+                else
+                {
+                    horse.HorseSex = Shares.Enum.HorseSex.Female;
+                }
+
+                horse.Name = name;
+                horse.Age = Convert.ToInt32(age);
+                horse.Stats.Health = decimal.Parse(health);
+                horse.Stats.Energy = decimal.Parse(energy);
+                horse.Stats.Moral = decimal.Parse(moral);
+
+                HtmlNode reproductionNode = doc.DocumentNode.SelectSingleNode("//*[@id=\"reproduction-tab-0\"]/table/tbody/tr/td[3]/a");
+
+                if (horse.Age > 30 && horse.Stats.Energy >= 45 && reproductionNode is not null && reproductionNode.Id != "boutonEchographie")
+                {
+                    horse.AbleToBreed = true;
+                }
+
+                return horse;
+            });
+        }
+        //TODO: add multiple breeding trys for every male
+        private static async Task Breed(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females)
+        {
+            await Task.Run(async () =>
+            {
+                while (!males.IsEmpty && !females.IsEmpty)
+                {
+                    if (males.TryTake(out HorseModel male) && females.TryTake(out HorseModel female))
+                    {
+                        await OfferAndAcceptReproduction(bot, male, female);
+                    }
+                }
             });
         }
     }
