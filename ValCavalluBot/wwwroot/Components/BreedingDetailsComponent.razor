@@ -1,10 +1,10 @@
 ﻿@using Shares
-@using Shares.Model;
-@using Services;
-@using Shares.Enum;
-@using System.Threading;
-@inject IBotManagerService BotManagerService;
-@inject IGRPCService GRPCService;
+@using Shares.Model
+@using Services
+@using Shares.Enum
+@using System.Threading
+@inject IBotManagerService BotManagerService
+@using System.Collections.Concurrent
 
 
 <tr>
@@ -46,8 +46,13 @@
     [Parameter]
     public EventCallback<string> OnBotDeletedEvent { get; set; }
 
-    private List<HorseModel> foundHorses;
     private CancellationTokenSource cts = new();
+
+    protected override void OnInitialized()
+    {
+        Bot.OnBotStatusChanged += OnBotStatusChangedEvent;
+        Bot.OnBotCurrentActionChanged += OnBotCurrentStatusChangedEvent;
+    }
 
     private async Task Delete()
     {
@@ -55,15 +60,9 @@
         await OnBotDeletedEvent.InvokeAsync(Bot.Id);
     }
 
-
     private async Task StartBreeding()
     {
-        foundHorses = new();
-
-        GRPCClient.GRPCClient.OnGRPCFilterFoundHorse += OnGRPCFilterFoundHorse;
-
-        await GRPCService.GetFilteredHorses(Bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), Bot, cts);
-        await BotManagerService.StartBreeding(cts.Token);
+        await BotManagerService.StartBreeding(Bot, cts);
     }
 
     private void StopBreeding()
@@ -71,9 +70,13 @@
         cts.Cancel();
     }
 
-    private void OnGRPCFilterFoundHorse(HorseModel horse)
+    private void OnBotStatusChangedEvent(BotClientStatus status)
     {
-
+        InvokeAsync(() => StateHasChanged());
+    }
+    private void OnBotCurrentStatusChangedEvent(BotClientCurrentAction action)
+    {
+        InvokeAsync(() => StateHasChanged());
     }
 
 

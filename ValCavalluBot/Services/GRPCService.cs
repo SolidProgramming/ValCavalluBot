@@ -35,7 +35,7 @@ namespace ValCavalluBot.Services
         }
         public async Task GetFilteredHorses(List<string> breedingIds, HowrseBotModel bot, CancellationTokenSource cts)
         {           
-            await GRPCClient.GRPCClient.GetFilteredHorses(breedingIds, bot, cts);
+            await GRPCClient.GRPCClient.GetFilteredHorses(breedingIds, bot, cts.Token);
         }
     }
 }

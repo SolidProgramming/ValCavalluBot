@@ -29,7 +29,6 @@ namespace GRPCClient
 
             return await client.GetBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(20));
         }
-
         public static async Task<HorseCollectorResponseModel> GetHorsesFromBreedings(List<string> breedingIds, HowrseBotModel bot)
         {
             GrpcChannel channel = GrpcChannel.ForAddress(GRPCAdress);
@@ -46,8 +45,7 @@ namespace GRPCClient
 
             return await client.GetHorsesFromBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(999));
         }
-
-        public static async Task GetFilteredHorses(List<string> breedingIds, HowrseBotModel bot, CancellationTokenSource cts)
+        public static async Task GetFilteredHorses(List<string> breedingIds, HowrseBotModel bot, CancellationToken ct)
         {
             GrpcChannel channel = GrpcChannel.ForAddress(GRPCAdress);
 
@@ -63,12 +61,11 @@ namespace GRPCClient
 
             using var call = client.GetFilteredHorsesFromBreedings(request);
 
-            while (await call.ResponseStream.MoveNext(cts.Token))
+            while (await call.ResponseStream.MoveNext(ct))
             {
                 HorseModel horse = ConvertToHorse(call.ResponseStream.Current);
 
                 OnGRPCFilterFoundHorse(horse);
-
             }
 
             static HorseModel ConvertToHorse(FilterHorsesResponseModel horsedata)

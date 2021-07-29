@@ -52,6 +52,8 @@ message FilterHorsesResponseModel
    HorseSex Sex = 6;
    string Name = 7;
    float Energy = 8;
+   float Health = 9;
+   float Moral = 10;
 
 }
 

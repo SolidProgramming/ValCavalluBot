@@ -23,6 +23,8 @@ namespace Shares.Enum
         PferdWechseln,
         PferdeSuchen, 
         Einstallen,
+        DecksprungAnbieten,
+        DecksprungAnnehmen,
         Keine
     }
 }

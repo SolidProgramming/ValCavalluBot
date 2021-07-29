@@ -44,14 +44,13 @@ namespace HowrseBotClient
         {
             HowrseBotModel bot = GetBot(botId);
 
-            bot.OnBotStatusChanged += Bot_OnBotStatusChanged;
-
             bool success = await Login(bot);
 
             if (!success) return;
 
             await PerformActions(bot);
 
+            bot.CurrentAction = BotClientCurrentAction.Keine;
         }
         public static async Task StopBot(string botId)
         {
@@ -61,11 +60,7 @@ namespace HowrseBotClient
 
             bot.Status = BotClientStatus.Stopped;
             bot.CurrentAction = BotClientCurrentAction.Keine;
-        }
-        private static void Bot_OnBotStatusChanged(BotClientStatus status)
-        {
-
-        }
+        }        
         public static List<HowrseBotModel> GetBots()
         {
             if (Bots.Count == 0)
@@ -644,25 +639,59 @@ namespace HowrseBotClient
                 return HorseStatus.Fat;
             });
         }
-        public static async Task StartBreeding(ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females, CancellationToken ct)
-        {
+        public static async Task StartBreeding(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females, CancellationToken ct)
+        {            
             await Task.Run(async () =>
             {
+                bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
+
                 while (!ct.IsCancellationRequested)
                 {
                     if (males.TryTake(out HorseModel male) && females.TryTake(out HorseModel female))
                     {
-                        await OfferAndAcceptReproduction(male, female);
+                        await OfferAndAcceptReproduction(bot, male, female);
                     }
+                    await Task.Delay(50);
                 }
+
+                bot.CurrentAction = BotClientCurrentAction.Keine;
+
             }, CancellationToken.None);
         }
-        private static async Task OfferAndAcceptReproduction(HorseModel male, HorseModel female)
+        private static async Task OfferAndAcceptReproduction(HowrseBotModel bot, HorseModel male, HorseModel female)
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
-                //TODO
-                throw new NotImplementedException();
+                bool success = await Login(bot);
+
+                if (!success) return;
+
+                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/reserverJument", "id=" + male.Id + "&action=save&type=moi&price=0&owner=&nom=&mare=" + female.Id); //" + sStutenName + "
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
+
+                string html = bot.OwlientConnection.Get($"https://{ bot.Settings.Server }/elevage/chevaux/cheval?id=" + female.Id);
+
+                string horseFemaleHorseName = Regex.Match(html, "<a href=\"/elevage/chevaux/cheval\\?id=\\d+\">(.*?)</a>").Groups[1].Value;
+
+                await Task .Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                bot.CurrentAction = BotClientCurrentAction.DecksprungAnbieten;
+
+                string offerId = Regex.Match(html, "offre=(\\d+)&amp").Groups[1].Value;
+
+                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/saillie?offre=" + offerId + "&amp;jument=" + female.Id, "offre=" + offerId + "&amp;jument=" + female.Id);
+
+                await Task .Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                bot.CurrentAction = BotClientCurrentAction.DecksprungAnnehmen;
+
+                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/doReproduction", "id=" + female.Id + "&offer=" + offerId + "&action=accept&search=");
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
             });
         }
     }

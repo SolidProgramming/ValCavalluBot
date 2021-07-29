@@ -6,11 +6,17 @@ using Shares;
 using Shares.Model;
 using HowrseBotClient;
 using System.Threading;
+using System.Collections.Concurrent;
+using Shares.Enum;
 
 namespace ValCavalluBot.Services
 {
     public class BotManagerService : IBotManagerService
     {
+        private ConcurrentBag<HorseModel> males;
+        private ConcurrentBag<HorseModel> females;
+
+
         public HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
             return BotManager.CreateBot(botSettings);
@@ -39,10 +45,30 @@ namespace ValCavalluBot.Services
         {
             return await BotManager.LoginTest(bot);
         }
-        public async Task StartBreeding(CancellationToken ct)
+        public async Task StartBreeding(HowrseBotModel bot, CancellationTokenSource cts)
         {
-            await BotManager.StartBreeding(new(), new(), ct);
-            throw new NotImplementedException();
+            males = new();
+            females = new();
+
+            GRPCClient.GRPCClient.OnGRPCFilterFoundHorse += OnGRPCFilterFoundHorse;
+
+            await GRPCClient.GRPCClient.GetFilteredHorses(bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), bot, cts.Token);
+            
+            await BotManager.StartBreeding(bot, males, females, cts.Token);
+        }
+        private void OnGRPCFilterFoundHorse(HorseModel horse)
+        {           
+            switch (horse.HorseSex)
+            {
+                case HorseSex.Male:
+                    males.Add(horse);
+                    break;
+                case HorseSex.Female:
+                    females.Add(horse);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

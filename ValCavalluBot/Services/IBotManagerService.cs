@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,6 @@ namespace ValCavalluBot.Services
         HowrseBotModel GetBot(string botId);
         void DeleteBot(string botId);
         Task<bool> TestLogin(HowrseBotModel bot);
-        Task StartBreeding(CancellationToken ct);
+        Task StartBreeding(HowrseBotModel bot, CancellationTokenSource cts);
     }
 }
