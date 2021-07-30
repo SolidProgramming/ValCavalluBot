@@ -654,7 +654,7 @@ namespace HowrseBotClient
 
                 bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
 
-                while (!ct.IsCancellationRequested || (finished && !horseIds.IsEmpty))
+                while ((!finished || (finished && !horseIds.IsEmpty) && !ct.IsCancellationRequested))
                 {
                     if (horseIds.TryTake(out string horseId))
                     {
@@ -692,10 +692,7 @@ namespace HowrseBotClient
         {
             await Task.Run(async () =>
             {
-                bool success = await Login(bot);
-
-                if (!success) return;
-
+               
                 bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/reserverJument", "id=" + male.Id + "&action=save&type=moi&price=0&owner=&nom=&mare=" + female.Id); //" + sStutenName + "
 
                 await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
@@ -761,7 +758,7 @@ namespace HowrseBotClient
 
                 HtmlNode reproductionNode = doc.DocumentNode.SelectSingleNode("//*[@id=\"reproduction-tab-0\"]/table/tbody/tr/td[3]/a");
 
-                if (horse.Age > 30 && horse.Stats.Energy >= 45 && reproductionNode is not null && reproductionNode.Id != "boutonEchographie")
+                if (horse.Age > 30 && horse.Stats.Energy >= 45 && reproductionNode is not null && reproductionNode.Id != "boutonEchographie" && !reproductionNode.HasClass("action-disabled"))
                 {
                     horse.AbleToBreed = true;
                 }
