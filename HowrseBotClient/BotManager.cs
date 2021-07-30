@@ -650,8 +650,6 @@ namespace HowrseBotClient
                 ConcurrentBag<HorseModel> males = new();
                 ConcurrentBag<HorseModel> females = new();
 
-                GRPCFilterFinished = false;                
-
                 bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
 
                 while ((!finished || (finished && !horseIds.IsEmpty) && !ct.IsCancellationRequested))
@@ -659,6 +657,8 @@ namespace HowrseBotClient
                     if (horseIds.TryTake(out string horseId))
                     {
                         HorseModel horse = await GetHorseData(bot, horseId);
+
+                        if (!horse.AbleToBreed) continue;
 
                         switch (horse.HorseSex)
                         {
@@ -673,7 +673,7 @@ namespace HowrseBotClient
                         }
 
                     }
-                    await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                    await Task.Delay(250);
                 }
 
                 await Breed(bot, males, females);
@@ -682,11 +682,6 @@ namespace HowrseBotClient
 
             }, CancellationToken.None);
 
-        }
-
-        private static void GRPCClient_OnGRPCFilterFinished()
-        {
-            GRPCFilterFinished = true;
         }
         private static async Task OfferAndAcceptReproduction(HowrseBotModel bot, HorseModel male, HorseModel female)
         {
@@ -750,6 +745,7 @@ namespace HowrseBotClient
                     horse.HorseSex = Shares.Enum.HorseSex.Female;
                 }
 
+                horse.Id = horseId;
                 horse.Name = name;
                 horse.Age = Convert.ToInt32(age);
                 horse.Stats.Health = decimal.Parse(health);
