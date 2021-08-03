@@ -36,8 +36,12 @@
         <input type="button" class="btn btn-danger" @onclick="@Delete" value="Löschen" />
     </td>
 </tr>
-
-
+<div class="row">
+    <div class="col">
+        <label class="m-0">Gefundene Pferde:</label>
+        <label class="ml-2">@FoundHorsesCount</label>
+    </div>
+</div>
 
 @code {
     [Parameter]
@@ -47,6 +51,8 @@
     public EventCallback<string> OnBotDeletedEvent { get; set; }
 
     private CancellationTokenSource cts = new();
+
+    private int FoundHorsesCount = 0;
 
     protected override void OnInitialized()
     {
@@ -62,6 +68,7 @@
 
     private async Task StartBreeding()
     {
+        GRPCClient.GRPCClient.OnGRPCFilterFoundHorse += OnGRPCFilterFoundHorse;
         await BotManagerService.StartBreeding(Bot, cts);
     }
 
@@ -77,6 +84,11 @@
     private void OnBotCurrentStatusChangedEvent(BotClientCurrentAction action)
     {
         InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnGRPCFilterFoundHorse(string horseId)
+    {
+        FoundHorsesCount++;
     }
 
 

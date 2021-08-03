@@ -27,7 +27,11 @@ namespace HowrseBotClient.Class
 
             return new ButtonClickCoordinationsModel { X = xClickCoord, Y = yClickCoord };
         }
-        public static string ToUrlDecoded(this string text)
+        public static string ToUrlEncode(this string text)
+        {
+            return HttpUtility.UrlEncode(text);
+        }
+        public static string ToUrlDecode(this string text)
         {
             return HttpUtility.UrlDecode(text);
         }

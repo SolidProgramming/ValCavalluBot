@@ -74,7 +74,7 @@ namespace HowrseBotClient.Class
             bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/elevage/chevaux/doCentreInscription", "id=" + horseId + "&centre=" + ridingCenter.Id + "&duree=" + ridingCenter.Duration + "&elevage=&hash=" + ridingCenter.Hash);
             bot.HTMLActions.CurrentHtml = bot.OwlientConnection.Get("https://" + bot.Settings.Server + "/elevage/chevaux/cheval?id=" + horseId);
 
-            string rcName = Regex.Match(bot.HTMLActions.CurrentHtml, "href=\"/centre/fiche\\?id=" + ridingCenter.Id + "\">(.*?)</a>").Groups[1].Value.ToUrlDecoded();
+            string rcName = Regex.Match(bot.HTMLActions.CurrentHtml, "href=\"/centre/fiche\\?id=" + ridingCenter.Id + "\">(.*?)</a>").Groups[1].Value.ToUrlDecode();
 
             return rcName;
         }

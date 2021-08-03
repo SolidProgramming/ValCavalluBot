@@ -21,11 +21,12 @@ namespace HowrseBotClient
     public static class BotManager
     {
         private static List<HowrseBotModel> Bots = new();
-        private static GeneralSettingsModel GeneralSettings = new();
-        private static bool GRPCFilterFinished;
+        private static GeneralSettingsModel GeneralSettings = new();        
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
+            botSettings.Credentials.HowrseUsername = botSettings.Credentials.HowrseUsername.ToUrlEncode();
+
             HowrseBotModel bot = new()
             {
                 Id = Guid.NewGuid().ToString(),
@@ -645,6 +646,9 @@ namespace HowrseBotClient
         {
             await Task.Run(async () =>
             {
+                bot.Status = BotClientStatus.Started;
+                bot.CurrentAction = BotClientCurrentAction.Login;
+
                 if (!await Login(bot)) return;
 
                 ConcurrentBag<HorseModel> males = new();

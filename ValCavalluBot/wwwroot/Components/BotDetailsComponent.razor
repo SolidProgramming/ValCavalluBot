@@ -4,6 +4,7 @@
 @using Shares.Enum;
 @inject IBotManagerService BotManagerService;
 @inject IGRPCService GRPCService;
+@using HowrseBotClient.Class;
 
 
 <tr>
@@ -50,6 +51,7 @@
 <tr>
     <HorseDetailsComponent Collapsed="@Collapsed"></HorseDetailsComponent>
 </tr>
+
 
 @code {
     [Parameter]
