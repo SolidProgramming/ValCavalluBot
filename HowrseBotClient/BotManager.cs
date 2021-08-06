@@ -781,8 +781,6 @@ namespace HowrseBotClient
                     {
                         bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
 
-                        int availableBreedings = Convert.ToInt32(male.Stats.Energy) / 20;
-
                         await BreedingAttempt(bot, male, female);
                     }
                 }
