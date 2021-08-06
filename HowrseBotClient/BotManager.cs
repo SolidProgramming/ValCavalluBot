@@ -21,7 +21,7 @@ namespace HowrseBotClient
     public static class BotManager
     {
         private static List<HowrseBotModel> Bots = new();
-        private static GeneralSettingsModel GeneralSettings = new();        
+        private static GeneralSettingsModel GeneralSettings = new();
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -649,8 +649,12 @@ namespace HowrseBotClient
                 bot.Status = BotClientStatus.Started;
                 bot.CurrentAction = BotClientCurrentAction.Login;
 
-                if (!await Login(bot)) return;
-
+                if (!await Login(bot))
+                {
+                    bot.Status = BotClientStatus.Error;
+                    bot.CurrentAction = BotClientCurrentAction.Keine;
+                    return;
+                }
                 ConcurrentBag<HorseModel> males = new();
                 ConcurrentBag<HorseModel> females = new();
 
@@ -683,7 +687,7 @@ namespace HowrseBotClient
                 await Breed(bot, males, females);
 
                 bot.CurrentAction = BotClientCurrentAction.Keine;
-
+                bot.Status = BotClientStatus.Stopped;
             }, CancellationToken.None);
 
         }
@@ -691,7 +695,7 @@ namespace HowrseBotClient
         {
             await Task.Run(async () =>
             {
-               
+
                 bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/reserverJument", "id=" + male.Id + "&action=save&type=moi&price=0&owner=&nom=&mare=" + female.Id); //" + sStutenName + "
 
                 await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
@@ -775,8 +779,24 @@ namespace HowrseBotClient
                 {
                     if (males.TryTake(out HorseModel male) && females.TryTake(out HorseModel female))
                     {
-                        await OfferAndAcceptReproduction(bot, male, female);
+                        bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
+
+                        int availableBreedings = Convert.ToInt32(male.Stats.Energy) / 20;
+
+                        await BreedingAttempt(bot, male, female);
                     }
+                }
+            });
+        }
+        private static async Task BreedingAttempt(HowrseBotModel bot, HorseModel male, HorseModel female)
+        {
+            await Task.Run(async () =>
+            {
+                int availableBreedings = Convert.ToInt32(male.Stats.Energy) / 25;
+
+                for (int i = 0; i < availableBreedings; i++)
+                {
+                    await OfferAndAcceptReproduction(bot, male, female);
                 }
             });
         }

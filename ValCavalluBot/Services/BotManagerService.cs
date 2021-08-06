@@ -53,6 +53,9 @@ namespace ValCavalluBot.Services
 
             horseIds = new();
 
+            bot.Status = BotClientStatus.Started;
+            bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
+
             await GRPCClient.GRPCClient.GetFilteredHorses(bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList(), bot, cts.Token);
 
             await BotManager.StartBreeding(bot, horseIds, finished, cts.Token);
