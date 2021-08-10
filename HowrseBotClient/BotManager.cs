@@ -87,6 +87,7 @@ namespace HowrseBotClient
             return await Task.Run(() =>
             {
                 bot.Status = BotClientStatus.Started;
+                bot.CurrentAction = BotClientCurrentAction.Login;
 
                 string csrf = string.Empty;
                 string auth_token = string.Empty;
@@ -606,6 +607,7 @@ namespace HowrseBotClient
                 bot.Horse.Age = age;
 
                 bot.Horse.Status = await GetHorseStatus(bot);
+                Class.HorseStatus.Parse<decimal>(bot);
             });
         }
         private static async Task<int> GetHorseAge(HowrseBotModel bot)

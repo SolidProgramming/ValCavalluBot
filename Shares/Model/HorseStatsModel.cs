@@ -9,7 +9,7 @@ namespace Shares.Model
 {
     public class HorseStatsModel<T>
     {
-        public event Action<T> OnHorseStatsChanged;
+        //public event Action<T> OnHorseStatsChanged;
 
         private T _Energy;
         private T _Health;
@@ -23,7 +23,7 @@ namespace Shares.Model
             set
             {
                 _Energy = value;
-                OnHorseStatsChanged(value);                
+                //OnHorseStatsChanged(value);                
             }
         }
         public T Health {
@@ -34,7 +34,7 @@ namespace Shares.Model
             set 
             {
                 _Health = value;
-                OnHorseStatsChanged(value);
+                //OnHorseStatsChanged(value);
             }
         }
         public T Moral {
@@ -45,7 +45,7 @@ namespace Shares.Model
             set
             {
                 _Moral = value;
-                OnHorseStatsChanged(value);
+               // OnHorseStatsChanged(value);
             }
         }
     }
