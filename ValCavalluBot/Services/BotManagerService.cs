@@ -60,12 +60,10 @@ namespace ValCavalluBot.Services
 
             await BotManager.StartBreeding(bot, horseIds, finished, cts.Token);
         }
-
         private void GRPCClient_OnGRPCFilterFinished()
         {
             finished = true;
         }
-
         private void OnGRPCFilterFoundHorse(string horseId)
         {
             horseIds.Add(horseId);

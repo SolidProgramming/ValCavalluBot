@@ -440,10 +440,10 @@ namespace HowrseBotClient
 
                 switch (bot.Horse.Status)
                 {
-                    case HorseStatus.Fat:
+                    case Shares.Enum.HorseStatus.Fat:
                         neededFood[0] = "0";
                         break;
-                    case HorseStatus.Skinny:
+                    case Shares.Enum.HorseStatus.Skinny:
                         neededFood[0] = "20";
                         break;
                     default:
@@ -622,7 +622,7 @@ namespace HowrseBotClient
                 return Convert.ToInt32(age);
             });
         }
-        private static async Task<HorseStatus> GetHorseStatus(HowrseBotModel bot)
+        private static async Task<Shares.Enum.HorseStatus> GetHorseStatus(HowrseBotModel bot)
         {
             return await Task.Run(() =>
             {
@@ -631,14 +631,14 @@ namespace HowrseBotClient
 
                 HtmlNode div = doc.DocumentNode.SelectSingleNode("//*[@id=\"care-tab-feed\"]//*[@id=\"messageBoxInline\"]/div/div/span/span[2]");
 
-                if (div is null) return HorseStatus.Normal;
+                if (div is null) return Shares.Enum.HorseStatus.Normal;
 
                 if (div.InnerText.Contains("20"))
                 {
-                    return HorseStatus.Skinny;
+                    return Shares.Enum.HorseStatus.Skinny;
                 }
 
-                return HorseStatus.Fat;
+                return Shares.Enum.HorseStatus.Fat;
             });
         }
         //TODO: refactor this shit

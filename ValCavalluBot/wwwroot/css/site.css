@@ -1,8 +1,18 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@font-face {
+    font-family: 'ubuntu-v15-latin-regular';
+    src: url('../fonts/ubuntu-v15-latin-regular.woff');
 }
+
+.ufont {
+    font-family: "ubuntu-v15-latin-regular";
+}
+
+html, body {
+    font-family: ubuntu-v15-latin-regular;
+}
+
 
 a, .btn-link {
     color: #0366d6;
