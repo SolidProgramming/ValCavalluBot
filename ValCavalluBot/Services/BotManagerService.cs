@@ -8,6 +8,7 @@ using HowrseBotClient;
 using System.Threading;
 using System.Collections.Concurrent;
 using Shares.Enum;
+using System.Drawing;
 
 namespace ValCavalluBot.Services
 {
@@ -15,6 +16,8 @@ namespace ValCavalluBot.Services
     {
         private ConcurrentBag<string> horseIds;
         private bool finished;
+        public event Action<string> OnHorseSpriteChanged;
+
 
         public HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -67,6 +70,14 @@ namespace ValCavalluBot.Services
         private void OnGRPCFilterFoundHorse(string horseId)
         {
             horseIds.Add(horseId);
+        }
+        public void Init()
+        {
+            BotManager.OnHorseSpriteChanged += BotManager_OnHorseSpriteChanged;
+        }
+        private void BotManager_OnHorseSpriteChanged(string horseSpriteBase64)
+        {
+            OnHorseSpriteChanged(horseSpriteBase64);
         }
     }
 }

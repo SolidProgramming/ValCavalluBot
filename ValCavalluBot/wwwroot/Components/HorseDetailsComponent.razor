@@ -1,4 +1,7 @@
 ﻿@using Shares.Model;
+@using System.Drawing;
+@using Services;
+@inject IBotManagerService BotManagerService;
 
 <td colspan="6">
     <div class="@(Collapsed? "collapse": "" )">
@@ -34,14 +37,14 @@
                 <div class="mt-1">
                     <img src="/ICON/Flaticon/SVG/thunder.svg" height="28" width="28" />
                     <div class="progress" style="display:inline-block; width: 200px">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: @Bot.Horse.Stats.Energy;" aria-valuenow="@Bot.Horse.Stats.Energy" aria-valuemin="0" aria-valuemax="100">@(Bot.Horse.Stats.Energy + "%")</div>
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: @(Bot.Horse.Stats.Energy.ToString().Replace(",", ".") + "%");" aria-valuenow="@Bot.Horse.Stats.Energy" aria-valuemin="0" aria-valuemax="100">@(Bot.Horse.Stats.Energy + "%")</div>
                     </div>
                 </div>
                 <div class="mt-1">
                     <img src="/ICON/Flaticon/SVG/heart.svg" height="28" width="28" />
                     <div class="progress" style="display:inline-block; width: 200px">
                         <div class="progress" style="display:inline-block; width: 200px">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: @Bot.Horse.Stats.Health;" aria-valuenow="@Bot.Horse.Stats.Health" aria-valuemin="0" aria-valuemax="100">@(Bot.Horse.Stats.Health + "%")</div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: @(Bot.Horse.Stats.Health.ToString().Replace(",", ".") + "%");" aria-valuenow="@Bot.Horse.Stats.Health" aria-valuemin="0" aria-valuemax="100">@(Bot.Horse.Stats.Health + "%")</div>
                         </div>
                     </div>
                 </div>
@@ -49,7 +52,7 @@
                     <img src="/ICON/Flaticon/SVG/sun.svg" height="28" width="28" />
                     <div class="progress" style="display:inline-block; width: 200px">
                         <div class="progress" style="display:inline-block; width: 200px">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: @Bot.Horse.Stats.Moral;" aria-valuenow="@Bot.Horse.Stats.Moral" aria-valuemin="0" aria-valuemax="100">@(Bot.Horse.Stats.Moral + "%")</div>
+                            <div class="progress-bar bg-info" role="progressbar" style="width: @(Bot.Horse.Stats.Moral.ToString().Replace(",", ".") + "%");" aria-valuenow="@Bot.Horse.Stats.Moral" aria-valuemin="0" aria-valuemax="100">@(Bot.Horse.Stats.Moral + "%")</div>
                         </div>
                     </div>
                 </div>
@@ -164,8 +167,24 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md pl-0">
-                <img src="/ICON/Flaticon/SVG/horse.svg" height="180" width="180" />
+            <div class="col-md pl-0 text-center justify-content-center">
+                <div>
+                    @if (string.IsNullOrEmpty(HorseSpriteBase64))
+                    {
+                        <img src="/ICON/Flaticon/SVG/horse.svg" height="180" width="180" />
+                    }
+                    else
+                    {
+                        <img src="data:image/bmp;base64, @HorseSpriteBase64" alt="" height="250" width="250" />
+                    }
+                </div>
+                <div class="text-center">
+                    @if (!string.IsNullOrEmpty(Bot.Horse.Id))
+                    {
+                        <label class="text-primary">@Bot.Horse.Name</label>
+                        <label class="text-secondary">@("#" + Bot.Horse.Id)</label>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -177,4 +196,17 @@
     public bool Collapsed { get; set; } = false;
     [Parameter]
     public HowrseBotModel Bot { get; set; }
+
+    private string HorseSpriteBase64 { get; set; }
+
+    protected override void OnInitialized()
+    {
+        BotManagerService.Init();
+        BotManagerService.OnHorseSpriteChanged += OnHorseSpriteChanged;
+    }
+
+    private void OnHorseSpriteChanged(string horseSpriteBase64)
+    {
+        HorseSpriteBase64 = horseSpriteBase64;
+    }
 }

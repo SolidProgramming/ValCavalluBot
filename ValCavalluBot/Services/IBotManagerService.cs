@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace ValCavalluBot.Services
 {
     interface IBotManagerService
     {
+        event Action<string> OnHorseSpriteChanged;
+        void Init();
         Task StartBot(string botId);
         Task StopBot(string botId);
         HowrseBotModel CreateBot(BotSettingsModel botSettings);

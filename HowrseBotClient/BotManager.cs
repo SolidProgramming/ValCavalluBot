@@ -15,6 +15,7 @@ using GRPCClient;
 using HtmlAgilityPack;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Drawing;
 
 namespace HowrseBotClient
 {
@@ -22,6 +23,7 @@ namespace HowrseBotClient
     {
         private static List<HowrseBotModel> Bots = new();
         private static GeneralSettingsModel GeneralSettings = new();
+        public static event Action<string> OnHorseSpriteChanged;
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -606,8 +608,18 @@ namespace HowrseBotClient
                 int age = await GetHorseAge(bot);
                 bot.Horse.Age = age;
 
+                string horseSpriteBase64 = HorsePersonalization.GetSpriteBase64(bot);
+                OnHorseSpriteChanged(horseSpriteBase64);
+
                 bot.Horse.Status = await GetHorseStatus(bot);
                 Class.HorseStatus.Parse<decimal>(bot);
+
+                string horseName = Regex.Match(bot.HTMLActions.CurrentHtml, "<title>(.*?) - Howrse</title>").Groups[1].Value;
+                bot.Horse.Name = horseName;
+
+                string horseId = Regex.Match(bot.HTMLActions.CurrentHtml, "var chevalId = (\\d+);").Groups[1].Value;
+                bot.Horse.Id = horseId;
+
             });
         }
         private static async Task<int> GetHorseAge(HowrseBotModel bot)

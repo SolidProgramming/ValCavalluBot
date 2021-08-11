@@ -61,13 +61,13 @@
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/dashboard");
+        NavigationManager.NavigateTo("/");
     }
 
     private void Save()
     {
         SettingsService.SaveGeneralSettings(GeneralSettings);
-        NavigationManager.NavigateTo("/dashboard");
+        NavigationManager.NavigateTo("/");
     }
 
 }
