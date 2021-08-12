@@ -48,6 +48,14 @@ namespace HowrseBotClient.Class
             {
                 Endpoint.Horse,
                 "elevage/chevaux/"
+            },
+            {
+                Endpoint.MettreBas,
+                "elevage/chevaux/mettreBas"
+            },
+            {
+                Endpoint.ChoisirNoms,
+                "elevage/chevaux/choisirNoms"
             }
         };
 

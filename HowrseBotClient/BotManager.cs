@@ -16,7 +16,6 @@ using HtmlAgilityPack;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Drawing;
-using HtmlAgilityPack;
 
 namespace HowrseBotClient
 {
@@ -600,6 +599,7 @@ namespace HowrseBotClient
                 bot.HTMLActions.CurrentHtml = bot.OwlientConnection.Get(endPoint);
 
                 await ScrapeHorseInfos(bot);
+                await CheckAndCallVet(horseId, bot);
             });
         }
         private static async Task ScrapeHorseInfos(HowrseBotModel bot)
@@ -813,19 +813,53 @@ namespace HowrseBotClient
                 }
             });
         }
-        private static async Task CallVet(string horseId, HowrseBotModel bot)
+        private static async Task CheckAndCallVet(string horseId, HowrseBotModel bot)
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
+                if (!GeneralSettings.VetSettings.AutoCallVet) return;
+
+                bot.CurrentAction = BotClientCurrentAction.AbfohlenPrüfen;
+
                 HtmlDocument doc = new();
                 doc.LoadHtml(bot.HTMLActions.CurrentHtml);
 
                 HtmlNode vetButtonNode = doc.DocumentNode.SelectSingleNode("//*[@id=\"boutonVeterinaire\"]");
 
-                if (true)
-                {
+                if (vetButtonNode is null) return;
 
-                }
+                bot.CurrentAction = BotClientCurrentAction.TierarztRufen;
+
+                string endPoint = Endpoints.GetEndpoint(Endpoint.MettreBas, bot.Settings);
+                bot.OwlientConnection.Get(endPoint + $"?jument={horseId}");
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                endPoint = Endpoints.GetEndpoint(Endpoint.ChoisirNoms, bot.Settings);
+                bot.OwlientConnection.Get(endPoint + "?jument=" + horseId);
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                //TODO: geschlecht vom fohlen abfragen und ob es zwillinge sind
+                //string horsename;
+
+                //if (string.IsNullOrEmpty(GeneralSettings.VetSettings.FemaleHorseName))
+                //{
+                //    horsename = "stute";
+                //}
+
+                //if (true)
+                //{
+
+                //}
+
+                endPoint = Endpoints.GetEndpoint(Endpoint.ChoisirNoms, bot.Settings);
+                bot.OwlientConnection.Post(endPoint + "?jument=" + horseId, "valider=ok&poulain-1=" + "horsename");
+
+                //GET https://www.howrse.de/elevage/chevaux/mettreBas?jument=78430252 
+                //GET https://www.howrse.de/elevage/chevaux/choisirNoms?jument=78430252 
+
+                //POST https://www.howrse.de/elevage/chevaux/choisirNoms?jument=78430252 //valider=ok&poulain-1=m+5336.07
+                //GET https://www.howrse.de/elevage/chevaux/cheval?id=84291175&message=naissance 
             });
         }
     }

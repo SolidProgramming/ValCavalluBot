@@ -28,6 +28,8 @@ namespace HowrseBotClient.Enum
         AccShare,
         Friends,
         Boutique,
+        MettreBas,
+        ChoisirNoms,
         Horse
     }
 }

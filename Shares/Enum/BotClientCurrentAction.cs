@@ -25,6 +25,8 @@ namespace Shares.Enum
         Einstallen,
         DecksprungAnbieten,
         DecksprungAnnehmen,
+        AbfohlenPrüfen,
+        TierarztRufen,
         Keine
     }
 }
