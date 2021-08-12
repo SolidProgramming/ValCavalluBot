@@ -722,39 +722,6 @@ namespace HowrseBotClient
             }, CancellationToken.None);
 
         }
-        private static async Task OfferAndAcceptReproduction(HowrseBotModel bot, HorseModel male, HorseModel female)
-        {
-            await Task.Run(async () =>
-            {
-
-                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/reserverJument", "id=" + male.Id + "&action=save&type=moi&price=0&owner=&nom=&mare=" + female.Id); //" + sStutenName + "
-
-                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-
-                bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
-
-                string html = bot.OwlientConnection.Get($"https://{ bot.Settings.Server }/elevage/chevaux/cheval?id=" + female.Id);
-
-                string horseFemaleHorseName = Regex.Match(html, "<a href=\"/elevage/chevaux/cheval\\?id=\\d+\">(.*?)</a>").Groups[1].Value;
-
-                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-
-                bot.CurrentAction = BotClientCurrentAction.DecksprungAnbieten;
-
-                string offerId = Regex.Match(html, "offre=(\\d+)&amp").Groups[1].Value;
-
-                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/saillie?offre=" + offerId + "&amp;jument=" + female.Id, "offre=" + offerId + "&amp;jument=" + female.Id);
-
-                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-
-                bot.CurrentAction = BotClientCurrentAction.DecksprungAnnehmen;
-
-                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/doReproduction", "id=" + female.Id + "&offer=" + offerId + "&action=accept&search=");
-
-                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-
-            });
-        }
         private static async Task<HorseModel> GetHorseData(HowrseBotModel bot, string horseId)
         {
             return await Task.Run(async () =>
@@ -830,9 +797,42 @@ namespace HowrseBotClient
                 }
             });
         }
+        private static async Task OfferAndAcceptReproduction(HowrseBotModel bot, HorseModel male, HorseModel female)
+        {
+            await Task.Run(async () =>
+            {
+
+                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/reserverJument", "id=" + male.Id + "&action=save&type=moi&price=0&owner=&nom=&mare=" + female.Id); //" + sStutenName + "
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
+
+                string html = bot.OwlientConnection.Get($"https://{ bot.Settings.Server }/elevage/chevaux/cheval?id=" + female.Id);
+
+                string horseFemaleHorseName = Regex.Match(html, "<a href=\"/elevage/chevaux/cheval\\?id=\\d+\">(.*?)</a>").Groups[1].Value;
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                bot.CurrentAction = BotClientCurrentAction.DecksprungAnbieten;
+
+                string offerId = Regex.Match(html, "offre=(\\d+)&amp").Groups[1].Value;
+
+                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/saillie?offre=" + offerId + "&amp;jument=" + female.Id, "offre=" + offerId + "&amp;jument=" + female.Id);
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+                bot.CurrentAction = BotClientCurrentAction.DecksprungAnnehmen;
+
+                bot.OwlientConnection.Post($"https://{ bot.Settings.Server }/elevage/chevaux/doReproduction", "id=" + female.Id + "&offer=" + offerId + "&action=accept&search=");
+
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+
+            });
+        }
         private static async Task CheckAndCallVet(string horseId, HowrseBotModel bot)
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 if (!GeneralSettings.VetSettings.AutoCallVet) return;
 
