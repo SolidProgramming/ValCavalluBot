@@ -11,5 +11,6 @@ namespace Shares.Model
         public GeneralCredentialsModel GeneralCredentials { get; set; } = new();
         public int WaitTimeFrom { get; set; } = 100;
         public int WaitTimeTo { get; set; } = 1100;
+        public VetSettingsModel VetSettings { get; set; } = new();
     }
 }

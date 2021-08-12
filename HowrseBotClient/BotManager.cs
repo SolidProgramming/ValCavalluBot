@@ -16,6 +16,7 @@ using HtmlAgilityPack;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Drawing;
+using HtmlAgilityPack;
 
 namespace HowrseBotClient
 {
@@ -809,6 +810,21 @@ namespace HowrseBotClient
                 for (int i = 0; i < availableBreedings; i++)
                 {
                     await OfferAndAcceptReproduction(bot, male, female);
+                }
+            });
+        }
+        private static async Task CallVet(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+                HtmlDocument doc = new();
+                doc.LoadHtml(bot.HTMLActions.CurrentHtml);
+
+                HtmlNode vetButtonNode = doc.DocumentNode.SelectSingleNode("//*[@id=\"boutonVeterinaire\"]");
+
+                if (true)
+                {
+
                 }
             });
         }

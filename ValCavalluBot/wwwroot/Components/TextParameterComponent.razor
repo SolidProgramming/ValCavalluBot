@@ -1,0 +1,13 @@
+﻿<div class="border rounded pt-2 pl-1 pr-1 pb-2">
+    @foreach (string textParameter in TextParameters)
+    {
+        <label draggable="true"
+               class="draggable font-weight-bold bg-info rounded m-1 pl-2 pt-1 pb-1 pr-2">
+            @textParameter
+        </label>
+    }
+</div>
+
+@code {
+    private string[] TextParameters = { "GenPotenzial", "Geschlecht(M/W)", "Rasse" };
+}

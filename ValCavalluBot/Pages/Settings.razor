@@ -1,6 +1,7 @@
 ﻿@page "/settings";
 @using Shares.Model;
 @using Services;
+@using ValCavalluBot.wwwroot.Components;
 @inject ISettingsService SettingsService;
 @inject NavigationManager NavigationManager;
 
@@ -21,19 +22,39 @@
         <div class="form-group row">
             <img src="/ICON/Flaticon/SVG/sandclock.svg" style="height:30px;" />
             <div class="mr-5">
-                <input type="number" min="100" max="1000" step="10" @bind="@GeneralSettings.WaitTimeFrom"/>
+                <input type="number" min="100" max="1000" step="10" @bind="@GeneralSettings.WaitTimeFrom" />
                 <label>
                     Von
                 </label>
             </div>
             <div>
-                <input type="number" min="200" max="3000" step="10" @bind="@GeneralSettings.WaitTimeTo"/>
+                <input type="number" min="200" max="3000" step="10" @bind="@GeneralSettings.WaitTimeTo" />
                 <label>
                     Bis
                 </label>
             </div>
         </div>
     </div>
+</div>
+<div class="row mt-5 mb-3">
+    <TextParameterComponent></TextParameterComponent>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="chbVet" checked="@GeneralSettings.VetSettings.AutoCallVet" @onchange="OnCheckedChanged">
+            <label class="custom-control-label" for="chbVet">Auto. Tierarzt rufen</label>
+        </div>
+        <div class="mt-3">
+            <label for="txtbFemaleName">Stuten Name</label>
+            <input class="form-control" type="text" id="txtbFemaleName" @bind="@GeneralSettings.VetSettings.FemaleHorseName" placeholder="{Geschlecht(M/W)} {GenPotenzial} {Rasse}" />
+        </div>
+        <div class="mt-2">
+            <label for="txtbMaleName">Hengst Name</label>
+            <input class="form-control" type="text" id="txtbMaleName" @bind="@GeneralSettings.VetSettings.MaleHorseName" placeholder="{Geschlecht(M/W)} {GenPotenzial} {Rasse}"/>
+        </div>
+    </div>
+    <div class="col"></div>
 </div>
 <div class="row mt-5 mb-3">
     <div class="col">
@@ -68,6 +89,11 @@
     {
         SettingsService.SaveGeneralSettings(GeneralSettings);
         NavigationManager.NavigateTo("/");
+    }
+
+    private void OnCheckedChanged()
+    {
+        GeneralSettings.VetSettings.AutoCallVet = !GeneralSettings.VetSettings.AutoCallVet;
     }
 
 }
