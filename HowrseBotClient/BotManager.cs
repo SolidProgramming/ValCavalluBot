@@ -839,7 +839,7 @@ namespace HowrseBotClient
                 bot.OwlientConnection.Get(endPoint + "?jument=" + horseId);
 
                 await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
-                //TODO: geschlecht vom fohlen abfragen und ob es zwillinge sind
+                //TODO: geschlecht vom fohlen abfragen und ob es mehrere pferde sind. (ISIS kann bis zu 5 Pferde gegeben)
                 //string horsename;
 
                 //if (string.IsNullOrEmpty(GeneralSettings.VetSettings.FemaleHorseName))
