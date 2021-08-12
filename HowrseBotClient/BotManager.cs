@@ -296,6 +296,7 @@ namespace HowrseBotClient
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
 
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformDrinking(string horseId, HowrseBotModel bot)
@@ -316,6 +317,8 @@ namespace HowrseBotClient
                 string postParam = (authtokens.Drink + "=" + csrfToken + "&" + taskTokens.Drink[0] + "=" + horseId + "&" + taskTokens.Drink[1] + "=" + coords.X + "&" + taskTokens.Drink[2] + "=" + coords.Y).ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformStroking(string horseId, HowrseBotModel bot)
@@ -336,6 +339,8 @@ namespace HowrseBotClient
                 string postParam = (authtokens.Stroke + "=" + csrfToken + "&" + taskTokens.Stroke[0] + "=" + horseId + "&" + taskTokens.Stroke[1] + "=" + coords.X + "&" + taskTokens.Stroke[2] + "=" + coords.Y).ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformGrooming(string horseId, HowrseBotModel bot)
@@ -356,6 +361,8 @@ namespace HowrseBotClient
                 string postParam = (authtokens.Groom + "=" + csrfToken + "&" + taskTokens.Groom[0] + "=" + horseId + "&" + taskTokens.Groom[1] + "=" + coords.X + "&" + taskTokens.Groom[2] + "=" + coords.Y).ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformGiveCarrot(string horseId, HowrseBotModel bot)
@@ -376,6 +383,8 @@ namespace HowrseBotClient
                 string postParam = (authtokens.Carrot + "=" + csrfToken + "&id=" + horseId + "&friandise=carotte").ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformGiveMash(string horseId, HowrseBotModel bot)
@@ -396,6 +405,8 @@ namespace HowrseBotClient
                 string postParam = (authtokens.Mash + "=" + csrfToken + "&id=" + horseId + "&friandise=mash").ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformAging(string horseId, HowrseBotModel bot)
@@ -424,6 +435,8 @@ namespace HowrseBotClient
                 string postParam = (authtokens.Aging + "=" + csrfToken + "&" + taskTokens.Aging[0] + "=" + horseId + "&" + taskTokens.Aging[1] + "=" + horseAge + "&" + taskTokens.Aging[2] + "=" + coords.X + "&" + taskTokens.Aging[3] + "=" + coords.Y).ToLower();
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
+
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformFeeding(string horseId, HowrseBotModel bot)
@@ -544,6 +557,7 @@ namespace HowrseBotClient
 
                 }
 
+                Class.HorseStatus.Parse<decimal>(bot, true);
 
             });
         }
@@ -572,6 +586,7 @@ namespace HowrseBotClient
 
                 bot.HTMLActions.AfterActionHtml = bot.OwlientConnection.Post(endPoint, postParam);
 
+                Class.HorseStatus.Parse<decimal>(bot, true);
             });
         }
         private static async Task PerformRidingCenter(string horseId, HowrseBotModel bot)
@@ -613,6 +628,7 @@ namespace HowrseBotClient
                 OnHorseSpriteChanged(horseSpriteBase64);
 
                 bot.Horse.Status = await GetHorseStatus(bot);
+
                 Class.HorseStatus.Parse<decimal>(bot);
 
                 string horseName = Regex.Match(bot.HTMLActions.CurrentHtml, "<title>(.*?) - Howrse</title>").Groups[1].Value;
@@ -786,6 +802,7 @@ namespace HowrseBotClient
             });
         }
         //TODO: add multiple breeding trys for every male
+        //TODO: parse horsestatus after breeding weil es energie kostet für beide?
         private static async Task Breed(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females)
         {
             await Task.Run(async () =>
@@ -861,6 +878,34 @@ namespace HowrseBotClient
                 //POST https://www.howrse.de/elevage/chevaux/choisirNoms?jument=78430252 //valider=ok&poulain-1=m+5336.07
                 //GET https://www.howrse.de/elevage/chevaux/cheval?id=84291175&message=naissance 
             });
+        }
+        private static async Task CheckAndCatchUFO(string horseId, HowrseBotModel bot)
+        {
+            await Task.Run(() =>
+            {
+
+            });
+
+            string sUfoID = "";
+            string ufoImageName = "";
+            string ufoPath = "";
+
+            //sUfoID = GetBetween(html, "{initUfo(\"0\", {id:\"", "\"}, \"");
+
+            //if (sUfoID != "")
+            //{
+            //    ufoPath = Regex.Match(html, "/media/equideo/image/(.*?)\", .*?;</script></div>").Groups[1].Value;
+            //    ufoImageName = ufoPath.Substring(ufoPath.LastIndexOf("/") + 1);
+
+            //    Connection.pPost("https://" + AccountManagement._sServer + "/member/ufo/catch", "&ufo=" + sUfoID);
+
+
+            //    return Ufo.getReadableType(ufoImageName, ufoPath);
+            //}
+            //else
+            //{
+            //    return null;
+            //}
         }
     }
 }

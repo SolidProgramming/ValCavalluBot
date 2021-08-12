@@ -12,5 +12,6 @@ namespace Shares.Model
         public int WaitTimeFrom { get; set; } = 100;
         public int WaitTimeTo { get; set; } = 1100;
         public VetSettingsModel VetSettings = new();
+        public bool CatchUFOs { get; set; }
     }
 }

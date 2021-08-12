@@ -42,7 +42,7 @@
 <div class="row">
     <div class="col">
         <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" id="chbVet" checked="@GeneralSettings.VetSettings.AutoCallVet" @onchange="OnCheckedChanged">
+            <input type="checkbox" class="custom-control-input" id="chbVet" checked="@GeneralSettings.VetSettings.AutoCallVet" @onchange="OnVetAutoCheckedChanged">
             <label class="custom-control-label" for="chbVet">Auto. Tierarzt rufen</label>
         </div>
         <div class="mt-3">
@@ -51,7 +51,16 @@
         </div>
         <div class="mt-2">
             <label for="txtbMaleName">Hengst Name</label>
-            <input class="form-control" type="text" id="txtbMaleName" @bind="@GeneralSettings.VetSettings.MaleHorseName" placeholder="{Geschlecht(M/W)} {GenPotenzial} {Rasse}"/>
+            <input class="form-control" type="text" id="txtbMaleName" @bind="@GeneralSettings.VetSettings.MaleHorseName" placeholder="{Geschlecht(M/W)} {GenPotenzial} {Rasse}" />
+        </div>
+    </div>
+    <div class="col"></div>
+</div>
+<div class="row mt-5 mb-3">
+    <div class="col">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="chbUFO" checked="@GeneralSettings.CatchUFOs" @onchange="OnCatchUFOCheckedChanged">
+            <label class="custom-control-label" for="chbUFO">Auto. UFOs fangen</label>
         </div>
     </div>
     <div class="col"></div>
@@ -91,9 +100,14 @@
         NavigationManager.NavigateTo("/");
     }
 
-    private void OnCheckedChanged()
+    private void OnVetAutoCheckedChanged()
     {
         GeneralSettings.VetSettings.AutoCallVet = !GeneralSettings.VetSettings.AutoCallVet;
+    }
+
+    private void OnCatchUFOCheckedChanged()
+    {
+        GeneralSettings.CatchUFOs = !GeneralSettings.CatchUFOs;
     }
 
 }
