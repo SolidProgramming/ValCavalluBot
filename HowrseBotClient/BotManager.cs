@@ -691,6 +691,13 @@ namespace HowrseBotClient
 
                 bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
 
+                Task breedingTask = new(async() =>
+                {
+                    await Breed(bot, males, females, horseIds.Count, ct);
+                });
+
+                breedingTask.Start();
+
                 while ((!finished || (finished && !horseIds.IsEmpty) && !ct.IsCancellationRequested))
                 {
                     if (horseIds.TryTake(out string horseId))
@@ -712,10 +719,8 @@ namespace HowrseBotClient
                         }
 
                     }
-                    await Task.Delay(250);
+                    await Task.Delay(100);                    
                 }
-
-                await Breed(bot, males, females);
 
                 bot.CurrentAction = BotClientCurrentAction.Keine;
                 bot.Status = BotClientStatus.Stopped;
@@ -768,33 +773,37 @@ namespace HowrseBotClient
                 return horse;
             });
         }
-        //TODO: add multiple breeding trys for every male
+       
         //TODO: parse horsestatus after breeding weil es energie kostet für beide?
-        private static async Task Breed(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females)
+        private static async Task Breed(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females, int horseIdsCount, CancellationToken ct)
         {
             //männchen verfügbare decksprünge als property
             await Task.Run(async () =>
             {
-                while (!males.IsEmpty && !females.IsEmpty)
+                while (!ct.IsCancellationRequested || (horseIdsCount == 0 && !males.IsEmpty && !females.IsEmpty))
                 {
-                    if (males.TryTake(out HorseModel male))
+                    if (!males.TryTake(out HorseModel male))
                     {
-                        bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
-
-                        int availableBreedings = Convert.ToInt32(male.Stats.Energy - 20) / 25;
-
-                        for (int i = 0; i < availableBreedings; i++)
-                        {
-                            if(females.TryTake(out HorseModel female))
-                            {
-                                await OfferAndAcceptReproduction(bot, male, female);
-                            }
-                            else
-                            {
-                                break;
-                            }                            
-                        }
+                        continue;
                     }
+
+                    int availableBreedings = Convert.ToInt32(male.Stats.Energy - 20) / 25;
+
+                    if (availableBreedings <= 0)
+                    {
+                        continue;
+                    }
+
+                    for (int i = 0; i < availableBreedings; i++)
+                    {
+                        if (!females.TryTake(out HorseModel female))
+                        {
+                            continue;
+                        }
+
+                        await OfferAndAcceptReproduction(bot, male, female);
+                    }  
+                   
                 }
             });
         }
