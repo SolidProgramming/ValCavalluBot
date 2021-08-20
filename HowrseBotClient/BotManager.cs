@@ -772,28 +772,29 @@ namespace HowrseBotClient
         //TODO: parse horsestatus after breeding weil es energie kostet für beide?
         private static async Task Breed(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females)
         {
+            //männchen verfügbare decksprünge als property
             await Task.Run(async () =>
             {
                 while (!males.IsEmpty && !females.IsEmpty)
                 {
-                    if (males.TryTake(out HorseModel male) && females.TryTake(out HorseModel female))
+                    if (males.TryTake(out HorseModel male))
                     {
                         bot.CurrentAction = BotClientCurrentAction.PferdWechseln;
 
-                        await BreedingAttempt(bot, male, female);
-                    }
-                }
-            });
-        }
-        private static async Task BreedingAttempt(HowrseBotModel bot, HorseModel male, HorseModel female)
-        {
-            await Task.Run(async () =>
-            {
-                int availableBreedings = Convert.ToInt32(male.Stats.Energy) / 25;
+                        int availableBreedings = Convert.ToInt32(male.Stats.Energy - 20) / 25;
 
-                for (int i = 0; i < availableBreedings; i++)
-                {
-                    await OfferAndAcceptReproduction(bot, male, female);
+                        for (int i = 0; i < availableBreedings; i++)
+                        {
+                            if(females.TryTake(out HorseModel female))
+                            {
+                                await OfferAndAcceptReproduction(bot, male, female);
+                            }
+                            else
+                            {
+                                break;
+                            }                            
+                        }
+                    }
                 }
             });
         }
