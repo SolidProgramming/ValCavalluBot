@@ -284,6 +284,9 @@ namespace HowrseBotClient
                 }
             }
 
+            bot.CurrentAction = BotClientCurrentAction.Keine;
+            bot.Status = BotClientStatus.Stopped;
+
         }
         private static async Task PerformMission(string horseId, HowrseBotModel bot)
         {
