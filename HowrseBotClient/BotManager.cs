@@ -594,7 +594,7 @@ namespace HowrseBotClient
         }
         private static async Task PerformRidingCenter(string horseId, HowrseBotModel bot)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 if (!bot.HTMLActions.CurrentHtml.Contains("elevage/chevaux/centreInscription?id=")) return;
 
@@ -602,6 +602,8 @@ namespace HowrseBotClient
                 RidingCenterModel ridingCenter = RidingCenter.GetRidingCenter(horseId, bot);
                 RidingCenter.DoRegistration(horseId, ridingCenter, bot);
                 //TODO: RC Name in action log
+                await Task.Delay(Helper.GetRandomSleepFromSettings(GeneralSettings));
+                await ChangeHorse(horseId, bot);
             });
         }
         private static async Task ChangeHorse(string horseId, HowrseBotModel bot)
