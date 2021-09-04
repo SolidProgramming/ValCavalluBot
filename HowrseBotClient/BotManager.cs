@@ -792,7 +792,7 @@ namespace HowrseBotClient
                         continue;
                     }
 
-                    int availableBreedings = Convert.ToInt32(male.Stats.Energy - 20) / 25;
+                    int availableBreedings = Convert.ToInt32(male.Stats.Energy) - 20 / 25;
 
                     if (availableBreedings <= 0)
                     {
@@ -810,7 +810,7 @@ namespace HowrseBotClient
                     }  
                    
                 }
-            });
+            }, ct);
         }
         private static async Task OfferAndAcceptReproduction(HowrseBotModel bot, HorseModel male, HorseModel female)
         {
