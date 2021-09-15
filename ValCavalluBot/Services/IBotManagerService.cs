@@ -12,6 +12,7 @@ namespace ValCavalluBot.Services
     interface IBotManagerService
     {
         event Action<string> OnHorseSpriteChanged;
+        event Action<HowrseUserModel> OnHowrseUserInfoChanged;
         void Init();
         Task StartBot(string botId);
         Task StopBot(string botId);

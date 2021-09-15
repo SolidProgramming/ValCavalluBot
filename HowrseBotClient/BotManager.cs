@@ -24,6 +24,7 @@ namespace HowrseBotClient
         private static List<HowrseBotModel> Bots = new();
         private static GeneralSettingsModel GeneralSettings = new();
         public static event Action<string> OnHorseSpriteChanged;
+        public static event Action<HowrseUserModel> OnHowrseUserInfoChanged;
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -48,9 +49,10 @@ namespace HowrseBotClient
         {
             HowrseBotModel bot = GetBot(botId);
 
-            bool success = await Login(bot);
+            if (!await Login(bot)) return;
 
-            if (!success) return;
+            HowrseUserModel howrseUser = await HowrseUser.GetUserInfo(bot);
+            OnHowrseUserInfoChanged(howrseUser);
 
             await PerformActions(bot);
 
@@ -676,8 +678,7 @@ namespace HowrseBotClient
 
                 return Shares.Enum.HorseStatus.Fat;
             });
-        }
-        //TODO: refactor this shit
+        }       
         public static async Task StartBreeding(HowrseBotModel bot, ConcurrentBag<string> horseIds, bool finished, CancellationToken ct)
         {
             await Task.Run(async () =>
@@ -777,9 +778,7 @@ namespace HowrseBotClient
 
                 return horse;
             });
-        }
-       
-        //TODO: parse horsestatus after breeding weil es energie kostet für beide?
+        }              
         private static async Task Breed(HowrseBotModel bot, ConcurrentBag<HorseModel> males, ConcurrentBag<HorseModel> females, int horseIdsCount, CancellationToken ct)
         {
             //männchen verfügbare decksprünge als property

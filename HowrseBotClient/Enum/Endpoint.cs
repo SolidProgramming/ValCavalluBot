@@ -30,6 +30,7 @@ namespace HowrseBotClient.Enum
         Boutique,
         MettreBas,
         ChoisirNoms,
-        Horse
+        Horse,
+        Profile
     }
 }

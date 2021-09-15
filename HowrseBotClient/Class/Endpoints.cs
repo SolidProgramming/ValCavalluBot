@@ -56,6 +56,10 @@ namespace HowrseBotClient.Class
             {
                 Endpoint.ChoisirNoms,
                 "elevage/chevaux/choisirNoms"
+            },
+            {
+                Endpoint.Profile,
+                "joueur/fiche"
             }
         };
 

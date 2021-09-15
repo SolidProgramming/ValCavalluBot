@@ -12,5 +12,10 @@ namespace Shares.Model
         public int Passes { get; set; }
         public int Rank { get; set; }
         public int HorseCount { get; set; }
+        public int DaysLoggedIn { get; set; }
+        public DateTime RegisterDate { get; set; }
+        public DateTime LastConnection{ get; set; }
+        public int Karma { get; set; }
+
     }
 }

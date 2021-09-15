@@ -17,7 +17,7 @@ namespace ValCavalluBot.Services
         private ConcurrentBag<string> horseIds;
         private bool finished;
         public event Action<string> OnHorseSpriteChanged;
-
+        public event Action<HowrseUserModel> OnHowrseUserInfoChanged;
 
         public HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
@@ -74,7 +74,14 @@ namespace ValCavalluBot.Services
         public void Init()
         {
             BotManager.OnHorseSpriteChanged += BotManager_OnHorseSpriteChanged;
+            BotManager.OnHowrseUserInfoChanged += BotManager_OnHowrseUserInfoChanged;            
         }
+
+        private void BotManager_OnHowrseUserInfoChanged(HowrseUserModel howrseUser)
+        {
+            OnHowrseUserInfoChanged(howrseUser);
+        }
+
         private void BotManager_OnHorseSpriteChanged(string horseSpriteBase64)
         {
             OnHorseSpriteChanged(horseSpriteBase64);

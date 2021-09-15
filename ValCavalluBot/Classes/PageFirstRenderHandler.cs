@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ValCavalluBot.Classes
 {
@@ -9,9 +8,9 @@ namespace ValCavalluBot.Classes
     {
         private static List<string> _firstRenderPages = new();
                  
-        public static bool IsFirstRender(this string pageName)
+        public static bool IsFirstRender(this string componentName)
         {
-            if (_firstRenderPages.Contains(pageName))
+            if (_firstRenderPages.Contains(componentName))
             {
                 return false;
             }
@@ -19,7 +18,7 @@ namespace ValCavalluBot.Classes
             return true;
         }
 
-        public static void PageFirstRender(string pageName)
+        public static void ComponentSetRendered(string pageName)
         {
             if (!_firstRenderPages.Contains(pageName))
             {

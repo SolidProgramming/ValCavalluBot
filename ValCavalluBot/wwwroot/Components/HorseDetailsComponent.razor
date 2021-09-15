@@ -10,25 +10,25 @@
                 <label class="m-0">Equus</label>
                 <img src="/ICON/Flaticon/SVG/dollar.svg" height="28" width="28" />
                 <!--<img alt="lodinggif"/>-->
-                <label>1.443.123</label>
+                <label>@HowrseUser.Eq</label>
             </div>
             <div class="col-md pt-1 pb-1 align-middle">
                 <label class="m-0">Pässe</label>
                 <img src="/ICON/Flaticon/SVG/coin.svg" height="28" width="28" />
                 <!--<img alt="lodinggif"/>-->
-                <label>123</label>
+                <label>@HowrseUser.Passes</label>
             </div>
             <div class="col-md  pt-1 pb-1 align-middle">
                 <label class="m-0">Rang</label>
                 <img src="/ICON/Flaticon/SVG/podium.svg" height="28" width="28" />
                 <!--<img alt="lodinggif"/>-->
-                <label>100.432</label>
+                <label>@HowrseUser.Rank</label>
             </div>
             <div class="col-md  pt-1 pb-1 align-middle">
                 <label class="m-0">Pferde</label>
                 <img src="/ICON/Flaticon/SVG/horse2.svg" height="28" width="28" />
                 <!--<img alt="lodinggif"/>-->
-                <label>5.213</label>
+                <label>@HowrseUser.HorseCount</label>
             </div>
         </div>
         <hr />
@@ -198,15 +198,22 @@
     public HowrseBotModel Bot { get; set; }
 
     private string HorseSpriteBase64 { get; set; }
+    private HowrseUserModel HowrseUser { get; set; } = new();
 
     protected override void OnInitialized()
     {
         BotManagerService.Init();
         BotManagerService.OnHorseSpriteChanged += OnHorseSpriteChanged;
+        BotManagerService.OnHowrseUserInfoChanged += OnHowrseUserInfoChanged;
     }
 
     private void OnHorseSpriteChanged(string horseSpriteBase64)
     {
         HorseSpriteBase64 = horseSpriteBase64;
+    }
+
+    private void OnHowrseUserInfoChanged(HowrseUserModel howrseUser)
+    {
+        HowrseUser = howrseUser;
     }
 }
