@@ -8,6 +8,7 @@
 @inject ISettingsService SettingsService;
 @inject IBotManagerService BotManagerService;
 @inject IGRPCService GRPCService;
+@using Enum;
 
 <link rel="stylesheet" href="/css/site.css" />
 
@@ -237,35 +238,7 @@
     </div>
 </div>
 <hr />
-<div class="row d-flex justify-content-center mb-2 mt-4">
-    <div class="input-group rounded col-md-3">
-        <input type="search" class="form-control rounded" placeholder="Zucht Name" aria-label="Search"
-               aria-describedby="search-addon" />
-        <span class="input-group-text border-0 ml-1" id="search-addon">
-            Suchen
-        </span>
-    </div>
-</div>
-<hr />
-<div class="row">
-    <div class="col">
-        @if (Bot.Settings.Breedings.Count == 0)
-        {
-            <div class="d-flex justify-content-center mt-2">
-                <div class="spinner-grow text-warning" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="spinner-grow text-warning" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="spinner-grow text-warning" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        }
-        <HowrseBreedingsList Breedings="Bot.Settings.Breedings"></HowrseBreedingsList>
-    </div>
-</div>
+<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Apler.ToString()" Id="@Id"></BreedingSelectionComponent>
 <div class="row mt-3 mb-3">
     <div class="col">
         <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
@@ -318,7 +291,7 @@
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
         HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
-        bot.Settings.ChosenBreedings = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
+        bot.Settings.ChosenBreedingsApler = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
 
         bot.Settings.RidingCenterSettings.Filter =
             (PriceFilterEnabled ? RCFilter.PriceFilter : RCFilter.None) |

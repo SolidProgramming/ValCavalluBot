@@ -204,7 +204,7 @@ namespace HowrseBotClient
             {
                 bot.CurrentAction = BotClientCurrentAction.PferdeSuchen;
 
-                List<string> breedingIds = bot.Settings.ChosenBreedings.Select(_ => _.ID).ToList();
+                List<string> breedingIds = bot.Settings.ChosenBreedingsApler.Select(_ => _.ID).ToList();
                 HorseCollectorResponseModel response = await GRPCClient.GRPCClient.GetHorsesFromBreedings(breedingIds, bot);
 
                 foreach (string horseId in response.HorseIds)

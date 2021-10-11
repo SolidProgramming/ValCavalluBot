@@ -1,0 +1,97 @@
+﻿@using Shares.Model;
+@using Shares.Enum;
+@using Services;
+@using Enum;
+@using ValCavalluBot.wwwroot.Components;
+@using ValCavalluBot.Classes;
+@inject NavigationManager NavigationManager;
+@inject ISettingsService SettingsService;
+@inject IBotManagerService BotManagerService;
+@inject IGRPCService GRPCService;
+
+<div class="row">
+    <div class="col">
+        @if (Bot.Settings.Breedings.Count == 0)
+        {
+            <div class="d-flex justify-content-center mt-2">
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="spinner-grow text-warning" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+        <HowrseBreedingsList Breedings="Bot.Settings.Breedings"></HowrseBreedingsList>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string SelectionType { get; set; }
+
+    private BreedingSelectionType SelectedType { get; set; }
+
+    private HowrseBotModel Bot { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Bot = BotManagerService.GetBot(Id);
+
+        if (base.ToString().IsFirstRender())
+        {
+            List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
+            if (breedingsFromServer.Count > 0)
+            {
+                Bot.Settings.Breedings = breedingsFromServer;
+            }
+        }
+
+        PageFirstRenderHandler.ComponentSetRendered(base.ToString());
+    }
+
+    private void Save()
+    {
+        List<HowrseBotModel> bots = BotManagerService.GetBots();
+
+        HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
+
+        Enum.TryParse(SelectionType, out BreedingSelectionType SelectedType);
+
+        switch (SelectedType)
+        {
+            case BreedingSelectionType.Apler:
+                bot.Settings.ChosenBreedingsApler = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
+                break;
+            case BreedingSelectionType.Breed:
+                bot.Settings.ChosenBreedingsBreed = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
+                break;
+        }
+
+        SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
+
+        MoveToDashboard();
+    }
+
+    private void MoveToDashboard()
+    {
+        Enum.TryParse(SelectionType, out BreedingSelectionType SelectedType);
+
+        switch (SelectedType)
+        {
+            case BreedingSelectionType.Apler:
+                NavigationManager.NavigateTo("/aplern");
+                break;
+            case BreedingSelectionType.Breed:
+                NavigationManager.NavigateTo("/breeding");
+                break;
+        }
+
+    }
+}

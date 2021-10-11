@@ -1,0 +1,20 @@
+﻿@page "/breedingselection/{Id}";
+@using Enum;
+@using ValCavalluBot.wwwroot.Components;
+
+<div class="row d-flex justify-content-center mb-2 mt-4">
+    <div class="input-group rounded col-md-3">
+        <input type="search" class="form-control rounded" placeholder="Zucht Name" aria-label="Search"
+               aria-describedby="search-addon" />
+        <span class="input-group-text border-0 ml-1" id="search-addon">
+            Suchen
+        </span>
+    </div>
+</div>
+<hr />
+<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Breed.ToString()" Id="@Id"></BreedingSelectionComponent>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+}

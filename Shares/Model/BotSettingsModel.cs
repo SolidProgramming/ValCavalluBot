@@ -12,7 +12,8 @@ namespace Shares.Model
         public HowrseCredentialsModel Credentials = new();
         public HowrseTaskModel Actions = new();
         public List<HowrseBreedingModel> Breedings = new();
-        public List<HowrseBreedingModel> ChosenBreedings = new();
+        public List<HowrseBreedingModel> ChosenBreedingsApler = new();
+        public List<HowrseBreedingModel> ChosenBreedingsBreed = new();
         public RidingCenterSettingsModel RidingCenterSettings = new();
         public string HowrseUserId { get; set; }
         public string Server { get; set; }
