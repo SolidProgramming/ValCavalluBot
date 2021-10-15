@@ -1,10 +1,41 @@
 ﻿@page "/breedingselection/{Id}";
 @using Enum;
 @using ValCavalluBot.wwwroot.Components;
+@using Shares.Model;
+@using Services;
+@inject IBotManagerService BotManagerService;
+@inject NavigationManager NavigationManager;
+@inject ISettingsService SettingsService;
 
-<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Breed.ToString()" Id="@Id"></BreedingSelectionComponent>
+<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Breed.ToString()" Id="@Id" ChosenBreedings="@ChosenBreedings"></BreedingSelectionComponent>
+<div class="row mt-3 mb-3">
+    <div class="col">
+        <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-danger form-control" @onclick="MoveToDashboard">Abbrechen</button>
+    </div>
+</div>
 
 @code {
     [Parameter]
     public string Id { get; set; }
+
+    private List<HowrseBreedingModel> ChosenBreedings { get; set; }
+
+    private void Save()
+    {
+        List<HowrseBotModel> bots = BotManagerService.GetBots();
+
+        HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
+
+        bot.Settings.ChosenBreedingsBreed = ChosenBreedings;
+
+        SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
+    }
+
+    private void MoveToDashboard()
+    {
+        NavigationManager.NavigateTo("/breeding");
+    }
 }

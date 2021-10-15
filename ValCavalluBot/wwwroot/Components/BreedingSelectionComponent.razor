@@ -65,43 +65,4 @@
 
         PageFirstRenderHandler.ComponentSetRendered(base.ToString());
     }
-
-    private void Save()
-    {
-        List<HowrseBotModel> bots = BotManagerService.GetBots();
-
-        HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
-
-        Enum.TryParse(SelectionType, out BreedingSelectionType SelectedType);
-
-        switch (SelectedType)
-        {
-            case BreedingSelectionType.Apler:
-                bot.Settings.ChosenBreedingsApler = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
-                break;
-            case BreedingSelectionType.Breed:
-                bot.Settings.ChosenBreedingsBreed = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
-                break;
-        }
-
-        SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
-
-        MoveToDashboard();
-    }
-
-    private void MoveToDashboard()
-    {
-        Enum.TryParse(SelectionType, out BreedingSelectionType SelectedType);
-
-        switch (SelectedType)
-        {
-            case BreedingSelectionType.Apler:
-                NavigationManager.NavigateTo("/aplern");
-                break;
-            case BreedingSelectionType.Breed:
-                NavigationManager.NavigateTo("/breeding");
-                break;
-        }
-
-    }
 }

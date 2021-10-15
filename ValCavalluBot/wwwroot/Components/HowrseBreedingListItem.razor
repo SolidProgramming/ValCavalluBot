@@ -2,7 +2,7 @@
 
 <!-- Default checked -->
 <div class="custom-control custom-checkbox">
-    <input type="checkbox" class="custom-control-input" id="check@(Index)" checked="@HowrseBreeding.Checked" @onchange="OnCheckedChanged">
+    <input type="checkbox" class="custom-control-input" id="check@(Index)" checked="@Checked" @onchange="ChosenBreedingChanged">
     <label class="custom-control-label" for="check@(Index)">@HowrseBreeding.Name</label>
 </div>
 @code {
@@ -12,8 +12,25 @@
     [Parameter]
     public int Index { get; set; }
 
-    private void OnCheckedChanged()
+    [Parameter]
+    public EventCallback<HowrseBreedingModel> AddedBreedingEvent { get; set; }
+
+    [Parameter]
+    public EventCallback<HowrseBreedingModel> RemovedBreedingEvent { get; set; }
+
+    private bool Checked { get; set; }
+
+    private void ChosenBreedingChanged()
     {
         HowrseBreeding.Checked = !HowrseBreeding.Checked;
+
+        if (Checked)
+        {
+            AddedBreedingEvent.InvokeAsync(HowrseBreeding);
+        }
+        else
+        {
+            RemovedBreedingEvent.InvokeAsync(HowrseBreeding);
+        }
     }
 }
