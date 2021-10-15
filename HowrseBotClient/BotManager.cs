@@ -15,7 +15,6 @@ using GRPCClient;
 using HtmlAgilityPack;
 using System.Threading;
 using System.Collections.Concurrent;
-using System.Drawing;
 
 namespace HowrseBotClient
 {
