@@ -5,7 +5,7 @@
     @foreach (HowrseBreedingModel breeding in Breedings)
     {
         <li class="list-group-item col-md-3">
-            <HowrseBreedingListItem HowrseBreeding="breeding" Index="Index"></HowrseBreedingListItem>
+            <HowrseBreedingListItem HowrseBreeding="breeding" Index="Index" Settings="Bot.Settings" AddedBreedingEvent="AddedBreedingEvent" RemovedBreedingEvent="RemovedBreedingEvent"></HowrseBreedingListItem>
         </li>
         Index++;
     }
@@ -15,5 +15,15 @@
     [Parameter]
     public List<HowrseBreedingModel> Breedings { get; set; }
 
+    [Parameter]
+    public HowrseBotModel Bot { get; set; }
+
+    [Parameter]
+    public EventCallback<HowrseBreedingModel> AddedBreedingEvent { get; set; }
+
+    [Parameter]
+    public EventCallback<HowrseBreedingModel> RemovedBreedingEvent { get; set; }
+
     private int Index = 0;
 }
+

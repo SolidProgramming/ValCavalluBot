@@ -1,11 +1,15 @@
 ﻿@using Shares.Model;
+@using Enum;
 
 <!-- Default checked -->
 <div class="custom-control custom-checkbox">
-    <input type="checkbox" class="custom-control-input" id="check@(Index)" checked="@Checked" @onchange="ChosenBreedingChanged">
+    <input type="checkbox" class="custom-control-input" id="check@(Index)" @bind="@Checked">
     <label class="custom-control-label" for="check@(Index)">@HowrseBreeding.Name</label>
 </div>
 @code {
+    [Parameter]
+    public BotSettingsModel Settings { get; set; }
+
     [Parameter]
     public HowrseBreedingModel HowrseBreeding { get; set; }
 
@@ -18,19 +22,52 @@
     [Parameter]
     public EventCallback<HowrseBreedingModel> RemovedBreedingEvent { get; set; }
 
-    private bool Checked { get; set; }
+    [Parameter]
+    public BreedingSelectionType SelectionType { get; set; }
 
-    private void ChosenBreedingChanged()
+    protected override void OnInitialized()
     {
-        HowrseBreeding.Checked = !HowrseBreeding.Checked;
-
-        if (Checked)
+        switch (SelectionType)
         {
-            AddedBreedingEvent.InvokeAsync(HowrseBreeding);
-        }
-        else
-        {
-            RemovedBreedingEvent.InvokeAsync(HowrseBreeding);
+            case BreedingSelectionType.Apler:
+                if (Settings.ChosenBreedingsApler.Any(_ => _.ID == HowrseBreeding.ID))
+                {
+                    Checked = true;
+                }                
+                break;
+            case BreedingSelectionType.Breed:
+                if (Settings.ChosenBreedingsBreed.Any(_ => _.ID == HowrseBreeding.ID))
+                {
+                    Checked = true;
+                }
+                break;
+            default:
+                break;
         }
     }
+
+    private bool _checked;
+
+    private bool Checked
+    {
+        get
+        {
+            return _checked;
+        }
+
+        set
+        {
+            _checked = value;
+            if (_checked)
+            {
+                AddedBreedingEvent.InvokeAsync(HowrseBreeding);
+            }
+            else
+            {
+                RemovedBreedingEvent.InvokeAsync(HowrseBreeding);
+            }
+        }
+    }
+
+
 }

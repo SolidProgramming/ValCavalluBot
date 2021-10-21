@@ -3,11 +3,13 @@
 @using ValCavalluBot.wwwroot.Components;
 @using Shares.Model;
 @using Services;
+@using Classes;
 @inject IBotManagerService BotManagerService;
 @inject NavigationManager NavigationManager;
 @inject ISettingsService SettingsService;
+@inject IGRPCService GRPCService;
 
-<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Breed.ToString()" Id="@Id" ChosenBreedings="@ChosenBreedings"></BreedingSelectionComponent>
+<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Breed.ToString()" Bot="@Bot"></BreedingSelectionComponent>
 <div class="row mt-3 mb-3">
     <div class="col">
         <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
@@ -21,15 +23,29 @@
     [Parameter]
     public string Id { get; set; }
 
+    private HowrseBotModel Bot { get; set; }
+
     private List<HowrseBreedingModel> ChosenBreedings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Bot = BotManagerService.GetBot(Id);
+
+        if (base.ToString().IsFirstRender())
+        {
+            List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
+            if (breedingsFromServer.Count > 0)
+            {
+                Bot.Settings.Breedings = breedingsFromServer;
+            }
+        }
+    }
 
     private void Save()
     {
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
-        HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
-
-        bot.Settings.ChosenBreedingsBreed = ChosenBreedings;
+        Bot.Settings.ChosenBreedingsBreed = ChosenBreedings;
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
     }

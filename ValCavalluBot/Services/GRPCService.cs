@@ -18,7 +18,7 @@ namespace ValCavalluBot.Services
             {
                 breedings.Add(new()
                 {
-                    Checked = false,
+                   // Checked = false,
                     ID = breedingResponse.Breedings[i].BreedingId,
                     Name = breedingResponse.Breedings[i].BreedingName
                 });

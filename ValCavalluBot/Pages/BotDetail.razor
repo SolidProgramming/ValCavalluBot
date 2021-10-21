@@ -238,7 +238,7 @@
     </div>
 </div>
 <hr />
-<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Apler.ToString()" Id="@Id"></BreedingSelectionComponent>
+<BreedingSelectionComponent SelectionType="@BreedingSelectionType.Apler.ToString()" Bot="@Bot"></BreedingSelectionComponent>
 <div class="row mt-3 mb-3">
     <div class="col">
         <button class="btn btn-success form-control" @onclick="Save">Speichern</button>
@@ -291,7 +291,8 @@
         List<HowrseBotModel> bots = BotManagerService.GetBots();
 
         HowrseBotModel bot = bots.SingleOrDefault(_ => _.Id == Id);
-        bot.Settings.ChosenBreedingsApler = Bot.Settings.Breedings.Where(_ => _.Checked).ToList();
+
+        bot.Settings.ChosenBreedingsApler = bot.Settings.TempChosenBreedingsApler;
 
         bot.Settings.RidingCenterSettings.Filter =
             (PriceFilterEnabled ? RCFilter.PriceFilter : RCFilter.None) |
@@ -301,6 +302,8 @@
             (ProfitFilterEnabled ? RCFilter.ProfitFilter : RCFilter.None) |
             (DrinkFilterEnabled ? RCFilter.FreeDrinkFilter : RCFilter.None) |
             (ShowerFilterEnabled ? RCFilter.FreeShowerFilter : RCFilter.None);
+
+        bots.SingleOrDefault(_ => _ == bot).Settings = bot.Settings;
 
         SettingsService.SaveBotSettings(bots.Select(_ => _.Settings).ToList());
 

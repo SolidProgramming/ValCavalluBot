@@ -35,25 +35,60 @@
                 </div>
             </div>
         }
-        <HowrseBreedingsList Breedings="Bot.Settings.Breedings"></HowrseBreedingsList>
+        <HowrseBreedingsList Bot="@Bot" Breedings="Bot.Settings.Breedings" AddedBreedingEvent="AddedBreedingEvent" RemovedBreedingEvent="RemovedBreedingEvent"></HowrseBreedingsList>
     </div>
 </div>
 
 @code {
-    [Parameter]
-    public string Id { get; set; }
+    //[Parameter]
+    //public string Id { get; set; }
 
     [Parameter]
     public string SelectionType { get; set; }
 
+    [Parameter]
+    public HowrseBotModel Bot { get; set; }
+
     private BreedingSelectionType SelectedType { get; set; }
 
-    private HowrseBotModel Bot { get; set; }
+    private void AddedBreedingEvent(HowrseBreedingModel breeding)
+    {
+        switch (SelectedType)
+        {
+            case BreedingSelectionType.Apler:
+                if (!Bot.Settings.TempChosenBreedingsApler.Any(_ => _.ID == breeding.ID))
+                {
+                    Bot.Settings.TempChosenBreedingsApler.Add(breeding);
+                }
+                break;
+            case BreedingSelectionType.Breed:
+                if (!Bot.Settings.TempChosenBreedingsBreed.Any(_ => _.ID == breeding.ID))
+                {
+                    Bot.Settings.TempChosenBreedingsBreed.Add(breeding);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void RemovedBreedingEvent(HowrseBreedingModel breeding)
+    {
+        switch (SelectedType)
+        {
+            case BreedingSelectionType.Apler:
+                Bot.Settings.TempChosenBreedingsApler.RemoveAll(_ => _.ID == breeding.ID);
+                break;
+            case BreedingSelectionType.Breed:
+                Bot.Settings.TempChosenBreedingsBreed.RemoveAll(_ => _.ID == breeding.ID);
+                break;
+            default:
+                break;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        Bot = BotManagerService.GetBot(Id);
-
         if (base.ToString().IsFirstRender())
         {
             List<HowrseBreedingModel> breedingsFromServer = await GRPCService.GetBreedings(Bot);
