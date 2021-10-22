@@ -7,6 +7,7 @@
     <StartupObject />
     <UserSecretsId>da909a61-1be5-4b1c-bcbe-932828592c3f</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AutoUpdater\AutoUpdaterClient.csproj" />
     <ProjectReference Include="..\GRPCClient\GRPCClient.csproj" />
     <ProjectReference Include="..\HowrseBotClient\HowrseBotClient.csproj" />
     <ProjectReference Include="..\Shares\Shares.csproj" />

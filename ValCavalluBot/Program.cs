@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ValCavalluBot;
+using AutoUpdaterClient;
 
 namespace ValCavalluBot
 {
@@ -22,7 +23,7 @@ namespace ValCavalluBot
         private static string[] _args = new string[1];
 
         public static void Main(string[] args)
-        {
+        {   
             if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != "true" && AnotherInstanceExists())
             {
                 string processName = Process.GetCurrentProcess().ProcessName;

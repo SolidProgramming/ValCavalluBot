@@ -1,0 +1,60 @@
+﻿@using Services;
+@using AutoUpdaterClient.Model;
+@using AutoUpdaterClient;
+@using System.Net;
+@using System.ComponentModel;
+@inject AutoUpdaterService AutoUpdaterService;
+
+
+@if (UpdateReady)
+{
+    <div class="row mt-3 mb-3">
+        <div class="bg-warning rounded w-100 p-3">
+            <div class="d-inline-block">
+                <h5>Es ist ein neues Update verfügbar!(@UpdateDetails.Version)</h5>
+                <button class="btn btn-primary mt-2" @onclick="DownloadUpdate">Update</button>
+            </div>
+            @if (DownloadProgress > 0)
+            {
+                <div class="mt-2 progress w-100" style="display:inline-block;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: @(DownloadProgress + "%");" aria-valuenow="@DownloadProgress" aria-valuemin="0" aria-valuemax="100">@(DownloadProgress + "%")</div>
+                </div>
+            }
+        </div>       
+    </div>
+}
+
+@code {
+    private UpdateModel UpdateDetails { get; set; } = new();
+    private bool UpdateReady { get; set; }
+
+    private int DownloadProgress = 0;
+    private long Received = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string assemblyVersion = typeof(Program).Assembly.GetName().Version.ToString();
+        (UpdateReady, UpdateDetails) = await AutoUpdaterService.CheckForUpdates(assemblyVersion);
+    }
+
+    private void DownloadUpdate()
+    {
+        AutoUpdater.OnDownloadProgressChanged += OnDownloadProgressChanged;
+        AutoUpdater.OnDownloadCompleted += OnDownloadCompleted;
+
+        AutoUpdaterService.DownloadUpdate(UpdateDetails);
+    }
+
+    private void OnDownloadProgressChanged(DownloadProgressChangedEventArgs e)
+    {
+        Received = e.BytesReceived;
+        DownloadProgress = e.ProgressPercentage;
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void OnDownloadCompleted(AsyncCompletedEventArgs e)
+    {
+        DownloadProgress = 0;
+        InvokeAsync(() => StateHasChanged());
+    }
+}
