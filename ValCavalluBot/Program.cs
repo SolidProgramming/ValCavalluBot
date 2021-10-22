@@ -52,7 +52,7 @@ namespace ValCavalluBot
                     {
                         webBuilder.UseStartup<Startup>().UseUrls(_args[0]);
                     }
-                });
+                } );
         public static bool AnotherInstanceExists()
         {
             Process currentRunningProcess = Process.GetCurrentProcess();

@@ -7,13 +7,19 @@ using System.Xml.Serialization;
 using System.IO.Compression;
 using System.Net;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace AutoUpdaterClient
 {
-    public class AutoUpdater
+    public static class AutoUpdater
     {
         public static event Action<DownloadProgressChangedEventArgs> OnDownloadProgressChanged;
         public static event Action<AsyncCompletedEventArgs> OnDownloadCompleted;
+        private static string TempPathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot", "Temp");
+        private static readonly string archivePath = Path.Combine(TempPathDirectory, "download");
+        private static readonly string assemlbyPath = Path.Combine(archivePath, "valcavallubot.zip");
+        private static readonly string extractDest = Path.Combine(TempPathDirectory, "update");
+
         public static async Task<(bool, UpdateModel)> CheckForUpdates(string AssemblyVersion)
         {
             using HttpClient client = new();
@@ -46,38 +52,47 @@ namespace AutoUpdaterClient
                 return null;
             }
         }
-
         public static void DownloadUpdate(UpdateModel updateDetails)
         {
-            string tempPathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot", "Temp");
-            string extractDest = Path.Combine(tempPathDirectory, "update");
-            string archivePath = Path.Combine(tempPathDirectory, "download");
-            string assemlbyPath = Path.Combine(archivePath, "valcavallubot.zip");
-
-            CheckDirectoryExists(tempPathDirectory);
-            CheckDirectoryExists(extractDest);
-            CheckDirectoryExists(archivePath);
-
+            CheckAllDirectorysExists();
             using WebClient wc = new();
 
             wc.DownloadProgressChanged += Wc_DownloadProgressChanged;
             wc.DownloadFileCompleted += Wc_DownloadFileCompleted;
             wc.DownloadFileAsync(new Uri(updateDetails.AssemblyUrl), assemlbyPath);
         }
+        public static void UnpackUpdate()
+        {
+            CheckAllDirectorysExists();
 
+            ZipFile.ExtractToDirectory(assemlbyPath, extractDest, true);
+
+        }
+        public static void CloseBotServer(int pid)
+        {
+            Process.GetProcessById(pid).Kill();
+        }
+        public static void MoveUpdatedFiles()
+        {
+
+        }
         private static void Wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             OnDownloadCompleted(e);
         }
-
         private static void Wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            if (e.ProgressPercentage % 3 == 1)
+            if (e.ProgressPercentage % 5 == 1)
             {
                 OnDownloadProgressChanged(e);
             }
         }
-
+        private static void CheckAllDirectorysExists()
+        {
+            CheckDirectoryExists(TempPathDirectory);
+            CheckDirectoryExists(archivePath);
+            CheckDirectoryExists(extractDest);
+        }
         private static void CheckDirectoryExists(string path)
         {
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);

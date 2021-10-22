@@ -14,10 +14,17 @@ namespace ValCavalluBot.Services
         {
             return await AutoUpdater.CheckForUpdates(AssemblyVersion);
         }
-
         public void DownloadUpdate(UpdateModel updateDetails)
         {
             AutoUpdater.DownloadUpdate(updateDetails);
+        }
+        public void UnpackUpdate()
+        {
+            AutoUpdater.UnpackUpdate();
+        }
+        public void CloseServer(int pid)
+        {
+            AutoUpdater.CloseBotServer(pid);
         }
     }
 }
