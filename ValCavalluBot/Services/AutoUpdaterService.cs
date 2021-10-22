@@ -22,9 +22,5 @@ namespace ValCavalluBot.Services
         {
             AutoUpdater.UnpackUpdate();
         }
-        public void CloseServer(int pid)
-        {
-            AutoUpdater.CloseBotServer(pid);
-        }
     }
 }

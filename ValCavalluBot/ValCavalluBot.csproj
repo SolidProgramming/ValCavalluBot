@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AutoUpdaterServerStarter\AutoUpdaterServerStarter.csproj" />
     <ProjectReference Include="..\AutoUpdater\AutoUpdaterClient.csproj" />
     <ProjectReference Include="..\GRPCClient\GRPCClient.csproj" />
     <ProjectReference Include="..\HowrseBotClient\HowrseBotClient.csproj" />

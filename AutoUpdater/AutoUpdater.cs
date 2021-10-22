@@ -66,16 +66,7 @@ namespace AutoUpdaterClient
             CheckAllDirectorysExists();
 
             ZipFile.ExtractToDirectory(assemlbyPath, extractDest, true);
-
-        }
-        public static void CloseBotServer(int pid)
-        {
-            Process.GetProcessById(pid).Kill();
-        }
-        public static void MoveUpdatedFiles()
-        {
-
-        }
+        }        
         private static void Wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             OnDownloadCompleted(e);

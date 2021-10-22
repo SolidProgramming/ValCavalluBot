@@ -6,6 +6,7 @@
 @inject AutoUpdaterService AutoUpdaterService;
 @inject IJSRuntime JsRuntime
 @using System.Diagnostics;
+@using System.IO; 
 
 @if (UpdateReady)
 {
@@ -60,10 +61,13 @@
         InvokeAsync(() => StateHasChanged());
 
         AutoUpdaterService.UnpackUpdate();
-      
-        JsRuntime.InvokeVoidAsync($"window.close");
-        Process.GetCurrentProcess().Kill();
 
+        JsRuntime.InvokeVoidAsync($"window.close");
+
+        //Process.Start("AutoUpdaterServerStarter.exe");
+
+        Process.GetCurrentProcess().Kill();
     }
+
 
 }
