@@ -15,9 +15,9 @@ namespace AutoUpdaterClient
     {
         public static event Action<DownloadProgressChangedEventArgs> OnDownloadProgressChanged;
         public static event Action<AsyncCompletedEventArgs> OnDownloadCompleted;
-        private static readonly string TempPathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot", "Temp");
+        private static string TempPathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot", "Temp");
         private static readonly string archivePath = Path.Combine(TempPathDirectory, "download");
-        private static readonly string assemblyPath = Path.Combine(archivePath, "valcavallubot.zip");
+        private static readonly string assemlbyPath = Path.Combine(archivePath, "valcavallubot.zip");
         private static readonly string extractDest = Path.Combine(TempPathDirectory, "update");
 
         public static async Task<(bool, UpdateModel)> CheckForUpdates(string AssemblyVersion)
@@ -59,16 +59,14 @@ namespace AutoUpdaterClient
 
             wc.DownloadProgressChanged += Wc_DownloadProgressChanged;
             wc.DownloadFileCompleted += Wc_DownloadFileCompleted;
-            wc.DownloadFileAsync(new Uri(updateDetails.AssemblyUrl), assemblyPath);
+            wc.DownloadFileAsync(new Uri(updateDetails.AssemblyUrl), assemlbyPath);
         }
         public static void UnpackUpdate()
         {
             CheckAllDirectorysExists();
 
-            ZipFile.ExtractToDirectory(assemblyPath, extractDest, true);
-
-            File.Delete(assemblyPath);
-        }
+            ZipFile.ExtractToDirectory(assemlbyPath, extractDest, true);
+        }        
         private static void Wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             OnDownloadCompleted(e);
