@@ -10,19 +10,29 @@ namespace AutoUpdaterServerStarter
 
         static void Main(string[] args)
         {
-            MoveFiles();
+#if DEBUG
+            Console.WriteLine("Taste drücken um zu starten");
             Console.ReadKey();
+#endif
+
+            MoveFiles();            
         }
 
         private static void MoveFiles()
         {
-            string test = Directory.GetCurrentDirectory();
+            string currentDirectory = Directory.GetCurrentDirectory();
 
-            DirectoryInfo di = new(test);
+            DirectoryInfo di = new(currentDirectory);
 
             foreach (FileInfo file in new DirectoryInfo(newAssemblyPath).GetFiles())
             {
-                file.MoveTo(di.FullName);
+                file.MoveTo(Path.Combine(di.FullName, file.Name), true);
+            }
+
+            foreach (DirectoryInfo directory in new DirectoryInfo(newAssemblyPath).GetDirectories())
+            {
+                //Directory.Move(directory.FullName, Path.Combine(di.FullName, directory.Name));
+                directory.MoveTo(di.FullName);
             }
         }
     }
