@@ -5,8 +5,8 @@ namespace AutoUpdaterServerStarter
 {
     class Program
     {
-        private static readonly string TempPathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot", "Temp");
-        private static readonly string newAssemblyPath = Path.Combine(TempPathDirectory, "update");
+        private static string TempPathDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SolidProgramming", "ValCavalluBot", "Temp");
+        private static readonly string extractDest = Path.Combine(TempPathDirectory, "update");
 
         static void Main(string[] args)
         {
@@ -16,16 +16,9 @@ namespace AutoUpdaterServerStarter
 
         private static void MoveFiles()
         {
-            string test = Directory.GetCurrentDirectory();
-
-            DirectoryInfo di = new(test);
-
-            foreach (FileInfo file in new DirectoryInfo(newAssemblyPath).GetFiles())
-            {
-                file.MoveTo(di.FullName);
-            }
-
-
+            var test = Directory.GetCurrentDirectory();
+            Directory.Delete(Directory.GetCurrentDirectory());
+            Directory.Move(extractDest, Directory.GetCurrentDirectory());
         }
     }
 }

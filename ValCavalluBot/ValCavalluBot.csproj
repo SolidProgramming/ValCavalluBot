@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <ApplicationIcon />
+    <OutputType>WinExe</OutputType>
+    <StartupObject />
+    <UserSecretsId>da909a61-1be5-4b1c-bcbe-932828592c3f</UserSecretsId>
+    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\SVG\**" />
+    <Content Remove="wwwroot\SVG\**" />
+    <EmbeddedResource Remove="wwwroot\SVG\**" />
+    <None Remove="wwwroot\SVG\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoUpdaterServerStarter\AutoUpdaterServerStarter.csproj" />
+    <ProjectReference Include="..\AutoUpdater\AutoUpdaterClient.csproj" />
+    <ProjectReference Include="..\GRPCClient\GRPCClient.csproj" />
+    <ProjectReference Include="..\HowrseBotClient\HowrseBotClient.csproj" />
+    <ProjectReference Include="..\Shares\Shares.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Model\" />
+    <Folder Include="wwwroot\fonts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+  </ItemGroup>
+
+</Project>
