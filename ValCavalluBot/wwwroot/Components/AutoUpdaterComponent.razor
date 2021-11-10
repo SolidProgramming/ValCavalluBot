@@ -6,20 +6,25 @@
 @inject AutoUpdaterService AutoUpdaterService;
 @inject IJSRuntime JsRuntime
 @using System.Diagnostics;
-@using System.IO; 
+@using System.IO;
 
 @if (UpdateReady)
 {
     <div class="row mt-3 mb-3">
-        <div class="bg-warning rounded w-100 p-3">
-            <div class="d-inline-block">
-                <h5>Es ist ein neues Update verfügbar!(@UpdateDetails.Version)</h5>
-                <button class="btn btn-primary mt-2" @onclick="DownloadUpdate">Update</button>
+        <div class="bg-info rounded w-100 p-3">
+            <div class="d-inline-block">                
+                @if (!IsDownloading)
+                {
+                    <h5>Es ist ein neues Update verfügbar!(@UpdateDetails.Version)</h5>
+                    <button class="btn btn-primary mt-2" @onclick="DownloadUpdate">Update</button>
+                }else{
+                    <h5>Update @UpdateDetails.Version wird heruntergeladen...</h5>
+                }
             </div>
             @if (DownloadProgress > 0)
             {
                 <div class="mt-2 progress w-100" style="display:inline-block;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: @(DownloadProgress + "%");" aria-valuenow="@DownloadProgress" aria-valuemin="0" aria-valuemax="100">@(DownloadProgress + "%")</div>
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @(DownloadProgress + "%");" aria-valuenow="@DownloadProgress" aria-valuemin="0" aria-valuemax="100">@(DownloadProgress + "%")</div>
                 </div>
             }
         </div>
@@ -29,6 +34,8 @@
 @code {
     private UpdateModel UpdateDetails { get; set; } = new();
     private bool UpdateReady { get; set; }
+
+    private bool IsDownloading { get; set; }
 
     private int DownloadProgress = 0;
     private long Received = 0;
@@ -41,6 +48,7 @@
 
     private void DownloadUpdate()
     {
+        IsDownloading = true;
         AutoUpdater.OnDownloadProgressChanged += OnDownloadProgressChanged;
         AutoUpdater.OnDownloadCompleted += OnDownloadCompleted;
 
@@ -56,15 +64,17 @@
 
     private void OnDownloadCompleted(AsyncCompletedEventArgs e)
     {
+        IsDownloading = false;
+        UpdateReady = false;
         DownloadProgress = 100;
 
         InvokeAsync(() => StateHasChanged());
 
         AutoUpdaterService.UnpackUpdate();
-
+       
         JsRuntime.InvokeVoidAsync($"window.close");
 
-        //Process.Start("AutoUpdaterServerStarter.exe");
+        Process.Start("AutoUpdaterServerStarter.exe");
 
         Process.GetCurrentProcess().Kill();
     }
