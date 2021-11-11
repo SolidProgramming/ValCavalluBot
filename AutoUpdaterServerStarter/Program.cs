@@ -32,7 +32,7 @@ namespace AutoUpdaterServerStarter
 
             foreach (DirectoryInfo directory in new DirectoryInfo(newAssemblyPath).GetDirectories())
             {
-                directory.MoveTo(di.FullName);
+                directory.MoveTo(Path.Combine(di.FullName, directory.Name));
             }
 
             Process.Start("ValCavalluBot.exe");
