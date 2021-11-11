@@ -31,7 +31,6 @@ namespace AutoUpdaterServerStarter
 
             foreach (DirectoryInfo directory in new DirectoryInfo(newAssemblyPath).GetDirectories())
             {
-                //Directory.Move(directory.FullName, Path.Combine(di.FullName, directory.Name));
                 directory.MoveTo(di.FullName);
             }
         }
