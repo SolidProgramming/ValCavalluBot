@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace AutoUpdaterServerStarter
@@ -33,6 +34,8 @@ namespace AutoUpdaterServerStarter
             {
                 directory.MoveTo(di.FullName);
             }
+
+            Process.Start("ValCavalluBot.exe");
         }
     }
 }
