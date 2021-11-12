@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Net;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 
 namespace AutoUpdaterClient
 {
@@ -24,16 +25,25 @@ namespace AutoUpdaterClient
         {
             using HttpClient client = new();
 
-            string result = await client.GetStringAsync("http://95.216.164.108/valcavallubot/latest.xml");
+            using CancellationTokenSource cts = new();
+            cts.CancelAfter(2000);
 
-            if (result.Length > 0)
+            try
             {
-                UpdateModel updateDetails = ParseUpdateModel(result);
+                string result = await client.GetStringAsync("http://95.216.164.108/valcavallubot/latest.xml", cts.Token);
 
-                if (new Version(updateDetails.Version) > new Version(AssemblyVersion))
+                if (result.Length > 0)
                 {
-                    return (true, updateDetails);
+                    UpdateModel updateDetails = ParseUpdateModel(result);
+
+                    if (new Version(updateDetails.Version) > new Version(AssemblyVersion))
+                    {
+                        return (true, updateDetails);
+                    }
                 }
+            }catch(Exception)
+            {
+                return default;
             }
 
             return default;

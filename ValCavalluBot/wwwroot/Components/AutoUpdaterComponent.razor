@@ -3,8 +3,9 @@
 @using AutoUpdaterClient;
 @using System.Net;
 @using System.ComponentModel;
+@using ValCavalluBot.Classes;
 @inject AutoUpdaterService AutoUpdaterService;
-@inject IJSRuntime JsRuntime
+@inject IJSRuntime JsRuntime;
 @using System.Diagnostics;
 @using System.IO;
 
@@ -12,12 +13,14 @@
 {
     <div class="row mt-3 mb-3">
         <div class="bg-info rounded w-100 p-3">
-            <div class="d-inline-block">                
+            <div class="d-inline-block">
                 @if (!IsDownloading)
                 {
                     <h5>Es ist ein neues Update verfügbar!(@UpdateDetails.Version)</h5>
                     <button class="btn btn-primary mt-2" @onclick="DownloadUpdate">Update</button>
-                }else{
+                }
+                else
+                {
                     <h5>Update @UpdateDetails.Version wird heruntergeladen...</h5>
                 }
             </div>
@@ -46,6 +49,7 @@
         (UpdateReady, UpdateDetails) = await AutoUpdaterService.CheckForUpdates(assemblyVersion);
     }
 
+
     private void DownloadUpdate()
     {
         IsDownloading = true;
@@ -71,7 +75,7 @@
         InvokeAsync(() => StateHasChanged());
 
         AutoUpdaterService.UnpackUpdate();
-       
+
         JsRuntime.InvokeVoidAsync($"window.close");
 
         Process.Start("AutoUpdaterServerStarter.exe");
