@@ -28,7 +28,7 @@ namespace GRPCClient
                 UserId = bot.Settings.HowrseUserId
             };
 
-            return await client.GetBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(20));
+            return await client.GetBreedingsAsync(request, deadline: DateTime.UtcNow.AddSeconds(60));
         }
         public static async Task<HorseCollectorResponseModel> GetHorsesFromBreedings(List<string> breedingIds, HowrseBotModel bot)
         {
