@@ -6,7 +6,7 @@
     <OutputType>WinExe</OutputType>
     <StartupObject />
     <UserSecretsId>da909a61-1be5-4b1c-bcbe-932828592c3f</UserSecretsId>
-    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <AssemblyVersion>1.0.2</AssemblyVersion>
   </PropertyGroup>
 
