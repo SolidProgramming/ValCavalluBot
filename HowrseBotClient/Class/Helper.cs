@@ -29,11 +29,11 @@ namespace HowrseBotClient.Class
         }
         public static string ToUrlEncode(this string text)
         {
-            return HttpUtility.UrlEncode(text);
+            return Uri.EscapeDataString(text);
         }
         public static string ToUrlDecode(this string text)
         {
-            return HttpUtility.UrlDecode(text);
+            return System.Net.WebUtility.UrlDecode(text);
         }
         public static int GetRandomSleepFromSettings(GeneralSettingsModel generalSettings)
         {
