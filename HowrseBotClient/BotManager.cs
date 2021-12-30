@@ -104,7 +104,7 @@ namespace HowrseBotClient
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
 
-                string serverResponse = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
+                string serverResponse = bot.OwlientConnection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername.ToUrlEncode() + "&password=" + bot.Settings.Credentials.HowrsePassword.ToUrlEncode() + "&redirection=&isBoxStyle=");
 
                 HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
 
@@ -165,7 +165,7 @@ namespace HowrseBotClient
                 auth_token = Regex.Match(html, "id=\"authentification(.{5})\" type").Groups[1].Value.ToLower();
                 csrf = Regex.Match(html, "value=\"(.{32})\" name=").Groups[1].Value.ToLower();
 
-                string serverResponse = owlientConnection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername + "&password=" + bot.Settings.Credentials.HowrsePassword + "&redirection=&isBoxStyle=");
+                string serverResponse = owlientConnection.Post("https://" + bot.Settings.Server + "/site/doLogIn", auth_token + "=" + csrf + "&login=" + bot.Settings.Credentials.HowrseUsername.ToUrlEncode() + "&password=" + bot.Settings.Credentials.HowrsePassword.ToUrlEncode() + "&redirection=&isBoxStyle=");
 
                 HowrseServerLoginResponseModel howrseServerLoginResponse = JsonConvert.DeserializeObject<HowrseServerLoginResponseModel>(serverResponse);
 
