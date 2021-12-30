@@ -27,8 +27,7 @@ namespace HowrseBotClient
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
-            botSettings.Credentials.HowrseUsername;
-
+            
             HowrseBotModel bot = new()
             {
                 Id = Guid.NewGuid().ToString(),
