@@ -27,7 +27,7 @@ namespace HowrseBotClient
 
         public static HowrseBotModel CreateBot(BotSettingsModel botSettings)
         {
-            botSettings.Credentials.HowrseUsername = botSettings.Credentials.HowrseUsername;
+            botSettings.Credentials.HowrseUsername;
 
             HowrseBotModel bot = new()
             {
