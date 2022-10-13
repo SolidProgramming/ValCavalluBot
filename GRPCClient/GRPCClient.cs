@@ -12,7 +12,7 @@ namespace GRPCClient
 {
     public static class GRPCClient
     {
-        private const string GRPCAdress = "http://ddns.lucaweidmann.de:8081";
+        private const string GRPCAdress = "";
         public static event Action<string> OnGRPCFilterFoundHorse;
         public static event Action OnGRPCFilterFinished;
 
